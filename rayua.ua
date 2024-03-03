@@ -145,4 +145,4 @@ DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" VectorII "int" "float" "float" C
 # Textures Module
 
 # text, position, size, color
-DrawText ← ◌Rl {"void" "DrawText" "const char*" "int" "int" "int" Color} {⊓(∘|⁅°⊟|⊙∘)}
+DrawText ← ◌Rl {"void" "DrawText" "const char*" "int" "int" "int" Color} {⊓(∘|°⊟⁅|⊙∘)}
