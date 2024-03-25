@@ -32,7 +32,7 @@ SetMousePosition ← ◌Rl {"void" "SetMousePosition" "int" "int"} {°⊟⁅}
 ShowCursor ← (◌Rl {"void" "ShowCursor"} {})
 HideCursor ← (◌Rl {"void" "HideCursor"} {})
 
-KeyCode ↚ ⟨∘|-@\0⌵⟩÷2type.
+KeyCode ↚ ⍥(-@\0⌵)÷2type.
 IsKeyPressed ← Rl {"char" "IsKeyPressed" "int"} {KeyCode}
 IsKeyPressedRepeat ← Rl {"char" "IsKeyPressedRepeat" "int"} {KeyCode}
 IsKeyDown ← Rl {"char" "IsKeyDown" "int"} {KeyCode}
