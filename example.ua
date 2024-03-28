@@ -1,5 +1,5 @@
 # Experimental!
-R ~ "rayua"
+R ~ "lib"
 
 Time ← ($"_:_:_"°[⊙⊙∘]≡(⬚@0↙¯2°⋕) ⌊[◿12 ⍥(⊃÷◿60)2 now])
 
