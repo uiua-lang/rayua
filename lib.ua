@@ -9,7 +9,7 @@ Color ← "{unsigned char; unsigned char; unsigned char; unsigned char}"
 
 # Core Module
 
-# window size, window title
+# ? windowSize windowTitle
 InitWindow ← ◌Rl {"void" "InitWindow" "int" "int" "const char*"} {⊓°⊟∘}
 SetTargetFPS ← ◌Rl {"void" "SetTargetFPS" "int"} {∘}
 GetFrameTime ← (Rl {"int" "GetFrameTime"} {})
@@ -103,46 +103,46 @@ KeyKpEqual ← 336
 
 # Shape Module
 
-# position, color
+# ? position color
 DrawPixel ← ◌Rl {"void" "DrawPixelV" VectorII Color} {⊙∘}
-# start pos, end pos, color
+# ? startPos endPos color
 DrawLine ← ◌Rl {"void" "DrawLineV" VectorII VectorII Color} {⊙⊙∘}
-# start pos, end pos, thickness, color
+# ? startPos endPos thickness color
 DrawLineEx ← ◌Rl {"void" "DrawLineEx" VectorII VectorII "float" Color} {⊙⊙⊙∘}
-# points, color
+# ? points color
 DrawLineStrip ← ◌Rl {"void" "DrawLineStrip" $"const _:1"VectorII "int" Color} {⊙∘}
-# start pos, end pos, thickness, color
+# ? startPos endPos thickness color
 DrawLineBezier ← ◌Rl {"void" "DrawLineBezier" VectorII VectorII "float" Color} {⊙⊙⊙∘}
-# center, radius, color
+# ? center radius color
 DrawCircle ← ◌Rl {"void" "DrawCircleV" VectorII "float" Color} {⊙⊙∘}
-# center, radius, color
+# ? center radius color
 DrawCircleLines ← ◌Rl {"void" "DrawCircleLinesV" VectorII "float" Color} {⊙⊙∘}
-# center, radius, start angle, end angle, segments, color
+# ? center radius startAngle endAngle segments color
 DrawCircleSector ← ◌Rl {"void" "DrawCircleSector" VectorII "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙∘}
-# center, radius, start angle, end angle, segments, color
+# ? center radius startAngle endAngle segments color
 DrawCircleSectorLines ← ◌Rl {"void" "DrawCircleSectorLines" VectorII "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙∘}
-# center, horizontal radius, vertical radius, color
+# ? center horizontalRadius verticalRadius color
 DrawEllipse ← ◌Rl {"void" "DrawEllipse" "int" "int" "float" "float" Color} {°⊟⁅⊙⊙⊙∘}
-# center, horizontal radius, vertical radius, color
+# ? center horizontalRadius verticalRadius color
 DrawEllipseLines ← ◌Rl {"void" "DrawEllipseLines" "int" "int" "float" "float" Color} {°⊟⁅⊙⊙⊙∘}
-# center, inner radius, outer radius, start angle, end angle, segments, color
+# ? center innerRadius outerRadius startAngle endAngle segments color
 DrawRing ← ◌Rl {"void" "DrawRing" VectorII "float" "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙⊙∘}
-# center, inner radius, outer radius, start angle, end angle, segments, color
+# ? center innerRadius outerRadius startAngle endAngle segments color
 DrawRingLines ← ◌Rl {"void" "DrawRingLines" VectorII "float" "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙⊙∘}
-# position, size, color
+# ? position size color
 DrawRectangle ← ◌Rl {"void" "DrawRectangleV" VectorII VectorII Color} {⊙⊙∘}
-# position, size, color
+# ? position size color
 DrawRectangleLines ← ◌Rl {"void" "DrawRectangleLines" "int" "int" "int" "int" Color} {∩°⊟⊓∩⁅∘}
-# point 1, point 2, point 3, color
+# ? point1 point2 point3 color
 DrawTriangle ← ◌Rl {"void" "DrawTriangle" VectorII VectorII VectorII Color} {⊙⊙⊙∘}
-# point 1, point 2, point 3, color
+# ? point1 point2 point3 color
 DrawTriangleLines ← ◌Rl {"void" "DrawTriangleLines" VectorII VectorII VectorII Color} {⊙⊙⊙∘}
-# center, sides, radius, rotation, color
+# ? center sides radius rotation color
 DrawPoly ← ◌Rl {"void" "DrawPoly" VectorII "int" "float" "float" Color} {⊙⊙⊙⊙∘}
-# center, sides, radius, rotation, color
+# ? center sides radius rotation color
 DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" VectorII "int" "float" "float" Color} {⊙⊙⊙⊙∘}
 
 # Textures Module
 
-# text, position, size, color
+# ? text position size color
 DrawText ← ◌Rl {"void" "DrawText" "const char*" "int" "int" "int" Color} {⊓(∘|°⊟⁅|⊙∘)}
