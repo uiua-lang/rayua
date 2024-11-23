@@ -1,11 +1,25 @@
 # Experimental!
-DllPath ← &var "RAYLIB_PATH"
-Rl      ← &ffi ⊂□DllPath
+
+GetLibraryPath ← (
+  {Os Arch}
+  $"bin/raylib_" ⍣(
+    "_win32.dll" °{"windows" "x86"}
+  | "_win64.dll" °{"windows" "x86_64"}
+  | ⍩(⍤"Unsupported architecture."0) ◌ °{"windows" ∘}
+  | ".so"
+  )
+  {"." ThisFileDir ∘}
+  /($"___" ⊙Sep) ▽⊸≡◇(>0⧻)
+)
+
+Rl ← &ffi ⊂□GetLibraryPath
+
+LibrayVersion ← "5.5"
 
 # Structs
 
-VectorII ← "{float; float}"
-Color    ← "{unsigned char; unsigned char; unsigned char; unsigned char}"
+VectorII ↚ "{float; float}"
+Color    ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
 
 # Core Module
 

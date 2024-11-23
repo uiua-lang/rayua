@@ -1,12 +1,11 @@
 # Experimental!
-R ~ "lib"
+R ~ "../lib"
 
 Time ← ($"_:_:_"°[⊙⊙∘]≡(⬚@0↙¯2°⋕) ⌊[◿12 ⍥(⊃÷◿60)2 now])
 
 R~InitWindow [800 450] "Rayua!"
 R~SetTargetFPS 60
-⍢(
-  R~BeginDrawing
+⍢(R~BeginDrawing
 
   R~ClearBackground [127 127 255 255]
   R~DrawText $"It is _" Time [12 12] 50 [...255]
