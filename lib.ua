@@ -18,8 +18,9 @@ LibrayVersion ← "5.5"
 
 # Structs
 
-VectorII ↚ "{float; float}"
-Color    ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
+Vector₂ ↚ "{float; float}"
+Color   ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
+Texture ↚ "{unsigned int; int; int; int; int}"
 
 # Core Module
 
@@ -40,8 +41,8 @@ IsMouseButtonPressed  ← Rl {"char" "IsMouseButtonPressed" "int"} {∘}
 IsMouseButtonDown     ← Rl {"char" "IsMouseButtonDown" "int"} {∘}
 IsMouseButtonReleased ← Rl {"char" "IsMouseButtonReleased" "int"} {∘}
 IsMouseButtonUp       ← Rl {"char" "IsMouseButtonUp" "int"} {∘}
-GetMousePosition      ← (Rl {VectorII "GetMousePosition"} {})
-GetMouseDelta         ← (Rl {VectorII "GetMouseDelta"} {})
+GetMousePosition      ← (Rl {Vector₂ "GetMousePosition"} {})
+GetMouseDelta         ← (Rl {Vector₂ "GetMouseDelta"} {})
 SetMousePosition      ← ◌Rl {"void" "SetMousePosition" "int" "int"} {°⊟⁅}
 ShowCursor            ← (◌Rl {"void" "ShowCursor"} {})
 HideCursor            ← (◌Rl {"void" "HideCursor"} {})
@@ -118,45 +119,46 @@ KeyKpEqual    ← 336
 # Shape Module
 
 # ? Position Color
-DrawPixel ← ◌Rl {"void" "DrawPixelV" VectorII Color} {⊙∘}
+DrawPixel ← ◌Rl {"void" "DrawPixelV" Vector₂ Color} {⊙∘}
 # ? StartPos EndPos Color
-DrawLine ← ◌Rl {"void" "DrawLineV" VectorII VectorII Color} {⊙⊙∘}
+DrawLine ← ◌Rl {"void" "DrawLineV" Vector₂ Vector₂ Color} {⊙⊙∘}
 # ? StartPos EndPos Thickness Color
-DrawLineEx ← ◌Rl {"void" "DrawLineEx" VectorII VectorII "float" Color} {⊙⊙⊙∘}
+DrawLineEx ← ◌Rl {"void" "DrawLineEx" Vector₂ Vector₂ "float" Color} {⊙⊙⊙∘}
 # ? Points Color
-DrawLineStrip ← ◌Rl {"void" "DrawLineStrip" $"const _:1"VectorII "int" Color} {⊙∘}
+DrawLineStrip ← ◌Rl {"void" "DrawLineStrip" $"const _:1"Vector₂ "int" Color} {⊙∘}
 # ? StartPos EndPos Thickness Color
-DrawLineBezier ← ◌Rl {"void" "DrawLineBezier" VectorII VectorII "float" Color} {⊙⊙⊙∘}
+DrawLineBezier ← ◌Rl {"void" "DrawLineBezier" Vector₂ Vector₂ "float" Color} {⊙⊙⊙∘}
 # ? Center Radius Color
-DrawCircle ← ◌Rl {"void" "DrawCircleV" VectorII "float" Color} {⊙⊙∘}
+DrawCircle ← ◌Rl {"void" "DrawCircleV" Vector₂ "float" Color} {⊙⊙∘}
 # ? Center Radius Color
-DrawCircleLines ← ◌Rl {"void" "DrawCircleLinesV" VectorII "float" Color} {⊙⊙∘}
+DrawCircleLines ← ◌Rl {"void" "DrawCircleLinesV" Vector₂ "float" Color} {⊙⊙∘}
 # ? Center Radius StartAngle EndAngle Segments Color
-DrawCircleSector ← ◌Rl {"void" "DrawCircleSector" VectorII "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙∘}
+DrawCircleSector ← ◌Rl {"void" "DrawCircleSector" Vector₂ "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙∘}
 # ? Center Radius StartAngle EndAngle Segments Color
-DrawCircleSectorLines ← ◌Rl {"void" "DrawCircleSectorLines" VectorII "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙∘}
+DrawCircleSectorLines ← ◌Rl {"void" "DrawCircleSectorLines" Vector₂ "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙∘}
 # ? Center HorizontalRadius VerticalRadius Color
 DrawEllipse ← ◌Rl {"void" "DrawEllipse" "int" "int" "float" "float" Color} {°⊟⁅⊙⊙⊙∘}
 # ? Center HorizontalRadius VerticalRadius Color
 DrawEllipseLines ← ◌Rl {"void" "DrawEllipseLines" "int" "int" "float" "float" Color} {°⊟⁅⊙⊙⊙∘}
 # ? Center InnerRadius OuterRadius StartAngle EndAngle Segments Color
-DrawRing ← ◌Rl {"void" "DrawRing" VectorII "float" "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙⊙∘}
+DrawRing ← ◌Rl {"void" "DrawRing" Vector₂ "float" "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙⊙∘}
 # ? Center InnerRadius OuterRadius StartAngle EndAngle Segments Color
-DrawRingLines ← ◌Rl {"void" "DrawRingLines" VectorII "float" "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙⊙∘}
+DrawRingLines ← ◌Rl {"void" "DrawRingLines" Vector₂ "float" "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙⊙∘}
 # ? Position Size Color
-DrawRectangle ← ◌Rl {"void" "DrawRectangleV" VectorII VectorII Color} {⊙⊙∘}
+DrawRectangle ← ◌Rl {"void" "DrawRectangleV" Vector₂ Vector₂ Color} {⊙⊙∘}
 # ? Position Size Color
 DrawRectangleLines ← ◌Rl {"void" "DrawRectangleLines" "int" "int" "int" "int" Color} {∩°⊟⊓∩⁅∘}
 # ? Point1 Point2 Point3 Color
-DrawTriangle ← ◌Rl {"void" "DrawTriangle" VectorII VectorII VectorII Color} {⊙⊙⊙∘}
+DrawTriangle ← ◌Rl {"void" "DrawTriangle" Vector₂ Vector₂ Vector₂ Color} {⊙⊙⊙∘}
 # ? Point1 Point2 Point3 Color
-DrawTriangleLines ← ◌Rl {"void" "DrawTriangleLines" VectorII VectorII VectorII Color} {⊙⊙⊙∘}
+DrawTriangleLines ← ◌Rl {"void" "DrawTriangleLines" Vector₂ Vector₂ Vector₂ Color} {⊙⊙⊙∘}
 # ? Center Sides Radius Rotation Color
-DrawPoly ← ◌Rl {"void" "DrawPoly" VectorII "int" "float" "float" Color} {⊙⊙⊙⊙∘}
+DrawPoly ← ◌Rl {"void" "DrawPoly" Vector₂ "int" "float" "float" Color} {⊙⊙⊙⊙∘}
 # ? Center Sides Radius Rotation Color
-DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" VectorII "int" "float" "float" Color} {⊙⊙⊙⊙∘}
+DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" Vector₂ "int" "float" "float" Color} {⊙⊙⊙⊙∘}
 
 # Textures Module
+LoadTexture ← Rl {Texture "LoadTexture" "const char*"} {∘}
 
 # ? Text Position Size Color
 DrawText ← ◌Rl {"void" "DrawText" "const char*" "int" "int" "int" Color} {⊓(∘|°⊟⁅|⊙∘)}
