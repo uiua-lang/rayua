@@ -1,6 +1,6 @@
 # Experimental!
 
-GetLibraryPath ← (
+GetLibraryPath ← memo(
   {Os Arch}
   $"bin/raylib_" ⍣(
     "_win32.dll" °{"windows" "x86"}
@@ -9,7 +9,7 @@ GetLibraryPath ← (
   | ".so"
   )
   {"." ThisFileDir ∘}
-  /($"___" ⊙Sep) ▽⊸≡◇(>0⧻)
+  /($"___" ⊙Sep)
 )
 
 Rl ← &ffi ⊂□GetLibraryPath
