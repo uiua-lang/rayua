@@ -1,7 +1,7 @@
 # Experimental!
 R ~ "../lib"
 
-# TODO: Add a description here
+# This example demonstrates how to draw shapes.
 
 R~InitWindow 640 480 "Rayua shapes example"
 R~SetTargetFPS 60
