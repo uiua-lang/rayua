@@ -1,6 +1,5 @@
 # Experimental!
-
-GetLibraryPath ← (
+GetLibraryPath ← memo(
   {Os Arch}
   $"bin/raylib_" ⍣(
     "_win32.dll" °{"windows" "x86"}
@@ -9,154 +8,360 @@ GetLibraryPath ← (
   | ".so"
   )
   {"." ThisFileDir ∘}
-  /($"___" ⊙Sep) ▽⊸≡◇(>0⧻)
+  /($"___" ⊙Sep)
 )
 
-Rl ← &ffi ⊂□GetLibraryPath
+Rl             ← &ffi ⊂□GetLibraryPath
+LibraryVersion ← "5.5"
 
-LibrayVersion ← "5.5"
+# Utils
 
-# Structs
+Type!    ↚^ $"⍜°_∘"⊢
+Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 
-VectorII ↚ "{float; float}"
-Color    ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
+# Structs 
+
+~Window {Width Height Title}
+~Texture {Id Width Height Mipmaps Format}
+~Vector₂ [X Y]
+
+┌─╴Color
+  ~[R G B A]
+  
+  LightGray  ← $LightGray New 200 200 200 255
+  Gray       ← $Gray New 130 130 130 255
+  DarkGray   ← $DarkGray New 80 80 80 255
+  Yellow     ← $Yellow New 253 249 0 255
+  Gold       ← $Gold New 255 203 0 255
+  Orange     ← $Orange New 255 161 0 255
+  Pink       ← $Pink New 255 109 194 255
+  Red        ← $Red New 230 41 55 255
+  Maroon     ← $Maroon New 190 33 55 255
+  Green      ← $Green New 0 228 48 255
+  Lime       ← $Lime New 0 158 47 255
+  DarkGreen  ← $DarkGreen New 0 117 44 255
+  SkyBlue    ← $SkyBlue New 102 191 255 255
+  Blue       ← $Blue New 0 121 241 255
+  DarkBlue   ← $DarkBlue New 0 82 172 255
+  Purple     ← $Purple New 200 122 255 255
+  Violet     ← $Violet New 135 60 190 255
+  DarkPurple ← $DarkPurple New 112 31 126 255
+  Beige      ← $Beige New 211 176 131 255
+  Brown      ← $Brown New 127 106 79 255
+  DarkBrown  ← $DarkBrown New 76 63 47 255
+  White      ← $White New 255 255 255 255
+  Black      ← $Black New 0 0 0 255
+  Blank      ← $Blank New 0 0 0 0
+  Magenta    ← $Magenta New 255 0 255 255
+  RayWhite   ← $RayWhite New 245 245 245 255
+└─╴
+
+┌─╴MouseButton
+  Left    ← 0
+  Right   ← 1
+  Middle  ← 2
+  Side    ← 3
+  Extra   ← 4
+  Forward ← 5
+  Back    ← 6
+└─╴
+
+┌─╴Key
+  Escape       ← 256
+  Enter        ← 257
+  Tab          ← 258
+  Backspace    ← 259
+  Insert       ← 260
+  Delete       ← 261
+  Right        ← 262
+  Left         ← 263
+  Down         ← 264
+  Up           ← 265
+  PageUp       ← 266
+  PageDown     ← 267
+  Home         ← 268
+  End          ← 269
+  CapsLock     ← 280
+  ScrollLock   ← 281
+  NumLock      ← 282
+  PrintScreen  ← 283
+  Pause        ← 284
+  F₁           ← 290
+  F₂           ← 291
+  F₃           ← 292
+  F₄           ← 293
+  F₅           ← 294
+  F₆           ← 295
+  F₇           ← 296
+  F₈           ← 297
+  F₉           ← 298
+  F₁₀          ← 299
+  F₁₁          ← 300
+  F₁₂          ← 301
+  LeftShift    ← 340
+  LeftControl  ← 341
+  LeftAlt      ← 342
+  LeftSuper    ← 343
+  RightShift   ← 344
+  RightControl ← 345
+  RightAlt     ← 346
+  RightSuper   ← 347
+  Menu         ← 348
+  
+  Kp₀        ← 320
+  Kp₁        ← 321
+  Kp₂        ← 322
+  Kp₃        ← 323
+  Kp₄        ← 324
+  Kp₅        ← 325
+  Kp₆        ← 326
+  Kp₇        ← 327
+  Kp₈        ← 328
+  Kp₉        ← 329
+  KpDecimal  ← 330
+  KpDivide   ← 331
+  KpMultiply ← 332
+  KpSubtract ← 333
+  KpAdd      ← 334
+  KpEnter    ← 335
+  KpEqual    ← 336
+└─╴
+
+# FFI Structs
+
+FFIVector₂ ↚ "{float; float}"
+FFIColor   ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
+FFITexture ↚ "{unsigned int; int; int; int; int}"
 
 # Core Module
 
-# ? WindowSize WindowTitle
-InitWindow        ← ◌Rl {"void" "InitWindow" "int" "int" "const char*"} {⊓°⊟∘}
-SetTargetFPS      ← ◌Rl {"void" "SetTargetFPS" "int"} {∘}
-GetFrameTime      ← (Rl {"int" "GetFrameTime"} {})
-GetTime           ← (Rl {"int" "GetTime"} {})
-GetFPS            ← (Rl {"int" "GetFPS"} {})
+# Initialize window and OpenGL context.
+# This should be called before any other Raylib functions.
+# ? WindowWidth WindowHeight WindowTitle
+InitWindow ← ◌Rl {"void" "InitWindow" "int" "int" "const char*"} Window
+
+# Set the target FPS (maximum). 
+# ? TargetFPS
+SetTargetFPS ← ◌Rl {"void" "SetTargetFPS" "int"} {∘}
+
+# Get time in seconds for last frame drawn (delta time)
+# FrameTime ? 
+GetFrameTime ← (Rl {"int" "GetFrameTime"} {})
+
+# Get elapsed time in seconds since InitWindow
+# ElapsedTime ?
+GetTime ← (Rl {"int" "GetTime"} {})
+
+# Get current FPS
+# FPS ?
+GetFPS ← (Rl {"int" "GetFPS"} {})
+
+# Check if application should close (KEY_ESCAPE pressed or windows close icon clicked)
+# Boolean ?
 WindowShouldClose ← (Rl {"int" "WindowShouldClose"} {})
-CloseWindow       ← (◌Rl {"void" "CloseWindow"} {})
 
-BeginDrawing    ← (◌Rl {"void" "BeginDrawing"} {})
-EndDrawing      ← (◌Rl {"void" "EndDrawing"} {})
-ClearBackground ← ◌Rl {"void" "ClearBackground" Color} {∘}
+# Close window and unload OpenGL context.
+CloseWindow ← (◌Rl {"void" "CloseWindow"} {})
 
-IsMouseButtonPressed  ← Rl {"char" "IsMouseButtonPressed" "int"} {∘}
-IsMouseButtonDown     ← Rl {"char" "IsMouseButtonDown" "int"} {∘}
+# Set background color (framebuffer clear color)
+# ? Color
+ClearBackground ← ◌Rl {"void" "ClearBackground" FFIColor} {Type!(Color)}
+
+# Setup canvas (framebuffer) to start drawing.
+BeginDrawing ← (◌Rl {"void" "BeginDrawing"} {})
+
+# End canvas drawing and swap buffers (double buffering).
+EndDrawing ← (◌Rl {"void" "EndDrawing"} {})
+
+# Check if a mouse button has been pressed once.
+# Boolean ? MouseButton
+IsMouseButtonPressed ← Rl {"char" "IsMouseButtonPressed" "int"} {∘}
+
+# Check if a mouse button is being pressed.
+# Boolean ? MouseButton
+IsMouseButtonDown ← Rl {"char" "IsMouseButtonDown" "int"} {∘}
+
+# Check if a mouse button has been released once.
+# Boolean ? MouseButton
 IsMouseButtonReleased ← Rl {"char" "IsMouseButtonReleased" "int"} {∘}
-IsMouseButtonUp       ← Rl {"char" "IsMouseButtonUp" "int"} {∘}
-GetMousePosition      ← (Rl {VectorII "GetMousePosition"} {})
-GetMouseDelta         ← (Rl {VectorII "GetMouseDelta"} {})
-SetMousePosition      ← ◌Rl {"void" "SetMousePosition" "int" "int"} {°⊟⁅}
-ShowCursor            ← (◌Rl {"void" "ShowCursor"} {})
-HideCursor            ← (◌Rl {"void" "HideCursor"} {})
 
-KeyCode            ↚ ⍥(-@\0⌵)⊸type
-IsKeyPressed       ← Rl {"char" "IsKeyPressed" "int"} {KeyCode}
+# Check if a mouse button is NOT being pressed.
+# Boolean ? MouseButton
+IsMouseButtonUp ← Rl {"char" "IsMouseButtonUp" "int"} {∘}
+
+# Get the current mouse position.
+# Vector2 ?
+GetMousePosition ← (
+  (Rl {FFIVector₂ "GetMousePosition"} {})
+  Type!Vector₂
+)
+
+# Get mouse delta between frames.
+# Vector2 ?
+GetMouseDelta ← (
+  (Rl {FFIVector₂ "GetMouseDelta"} {})
+  Type!Vector₂
+)
+
+# Set mouse position.
+# ? Vector2
+SetMousePosition ← (
+  Type!Vector₂ {°⊟⁅}
+  ◌Rl {"void" "SetMousePosition" "int" "int"}
+)
+
+# Shows cursor.
+ShowCursor ← (◌Rl {"void" "ShowCursor"} {})
+
+# Hides cursor.
+HideCursor ← (◌Rl {"void" "HideCursor"} {})
+
+KeyCode ↚ ⍥(-@\0⌵)⊸type
+
+# Check if a key has been pressed once.
+# Boolean ? Char
+IsKeyPressed ← Rl {"char" "IsKeyPressed" "int"} {KeyCode}
+
+# Check if a key has been pressed again.
+# Boolean ? Char
 IsKeyPressedRepeat ← Rl {"char" "IsKeyPressedRepeat" "int"} {KeyCode}
-IsKeyDown          ← Rl {"char" "IsKeyDown" "int"} {KeyCode}
-IsKeyReleased      ← Rl {"char" "IsKeyReleased" "int"} {KeyCode}
-IsKeyUp            ← Rl {"char" "IsKeyUp" "int"} {KeyCode}
-GetKeyPressed      ← (Rl {"int" "GetKeyPressed"} {})
-GetCharPressed     ← (+@\0 Rl {"int" "GetCharPressed"} {})
-SetExitKey         ← ◌Rl {"void" "SetExitKey" "int"} {KeyCode}
 
-KeyEscape       ← 256
-KeyEnter        ← 257
-KeyTab          ← 258
-KeyBackspace    ← 259
-KeyInsert       ← 260
-KeyDelete       ← 261
-KeyRight        ← 262
-KeyLeft         ← 263
-KeyDown         ← 264
-KeyUp           ← 265
-KeyPageUp       ← 266
-KeyPageDown     ← 267
-KeyHome         ← 268
-KeyEnd          ← 269
-KeyCapsLock     ← 280
-KeyScrollLock   ← 281
-KeyNumLock      ← 282
-KeyPrintScreen  ← 283
-KeyPause        ← 284
-KeyFOne         ← 290
-KeyFTwo         ← 291
-KeyFThree       ← 292
-KeyFFour        ← 293
-KeyFFive        ← 294
-KeyFSix         ← 295
-KeyFSeven       ← 296
-KeyFEight       ← 297
-KeyFNine        ← 298
-KeyFTen         ← 299
-KeyFEleven      ← 300
-KeyFTwelve      ← 301
-KeyLeftShift    ← 340
-KeyLeftControl  ← 341
-KeyLeftAlt      ← 342
-KeyLeftSuper    ← 343
-KeyRightShift   ← 344
-KeyRightControl ← 345
-KeyRightAlt     ← 346
-KeyRightSuper   ← 347
-KeyKbMenu       ← 348
+# Check if a key is being pressed.
+# Boolean ? Char
+IsKeyDown ← Rl {"char" "IsKeyDown" "int"} {KeyCode}
 
-KeyKpZero     ← 320
-KeyKpOne      ← 321
-KeyKpTwo      ← 322
-KeyKpThree    ← 323
-KeyKpFour     ← 324
-KeyKpFive     ← 325
-KeyKpSix      ← 326
-KeyKpSeven    ← 327
-KeyKpEight    ← 328
-KeyKpNine     ← 329
-KeyKpDecimal  ← 330
-KeyKpDivide   ← 331
-KeyKpMultiply ← 332
-KeyKpSubtract ← 333
-KeyKpAdd      ← 334
-KeyKpEnter    ← 335
-KeyKpEqual    ← 336
+# Check if a key has been released once.
+# Boolean ? Char
+IsKeyReleased ← Rl {"char" "IsKeyReleased" "int"} {KeyCode}
+
+# Check if a key is NOT being pressed.
+# Boolean ? Char
+IsKeyUp ← Rl {"char" "IsKeyUp" "int"} {KeyCode}
+
+# Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty.
+# Int ?
+GetKeyPressed ← (Rl {"int" "GetKeyPressed"} {})
+
+# Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty.
+# Char ?
+GetCharPressed ← +@\0 (Rl {"int" "GetCharPressed"} {})
+
+# Set a custom key to exit program (default is ESC).
+# ? Char
+SetExitKey ← ◌Rl {"void" "SetExitKey" "int"} {KeyCode}
 
 # Shape Module
 
+# Draw a pixel using geometry [Can be slow, use with care].
 # ? Position Color
-DrawPixel ← ◌Rl {"void" "DrawPixelV" VectorII Color} {⊙∘}
-# ? StartPos EndPos Color
-DrawLine ← ◌Rl {"void" "DrawLineV" VectorII VectorII Color} {⊙⊙∘}
-# ? StartPos EndPos Thickness Color
-DrawLineEx ← ◌Rl {"void" "DrawLineEx" VectorII VectorII "float" Color} {⊙⊙⊙∘}
-# ? Points Color
-DrawLineStrip ← ◌Rl {"void" "DrawLineStrip" $"const _:1"VectorII "int" Color} {⊙∘}
-# ? StartPos EndPos Thickness Color
-DrawLineBezier ← ◌Rl {"void" "DrawLineBezier" VectorII VectorII "float" Color} {⊙⊙⊙∘}
-# ? Center Radius Color
-DrawCircle ← ◌Rl {"void" "DrawCircleV" VectorII "float" Color} {⊙⊙∘}
-# ? Center Radius Color
-DrawCircleLines ← ◌Rl {"void" "DrawCircleLinesV" VectorII "float" Color} {⊙⊙∘}
-# ? Center Radius StartAngle EndAngle Segments Color
-DrawCircleSector ← ◌Rl {"void" "DrawCircleSector" VectorII "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙∘}
-# ? Center Radius StartAngle EndAngle Segments Color
-DrawCircleSectorLines ← ◌Rl {"void" "DrawCircleSectorLines" VectorII "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙∘}
-# ? Center HorizontalRadius VerticalRadius Color
-DrawEllipse ← ◌Rl {"void" "DrawEllipse" "int" "int" "float" "float" Color} {°⊟⁅⊙⊙⊙∘}
-# ? Center HorizontalRadius VerticalRadius Color
-DrawEllipseLines ← ◌Rl {"void" "DrawEllipseLines" "int" "int" "float" "float" Color} {°⊟⁅⊙⊙⊙∘}
-# ? Center InnerRadius OuterRadius StartAngle EndAngle Segments Color
-DrawRing ← ◌Rl {"void" "DrawRing" VectorII "float" "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙⊙∘}
-# ? Center InnerRadius OuterRadius StartAngle EndAngle Segments Color
-DrawRingLines ← ◌Rl {"void" "DrawRingLines" VectorII "float" "float" "float" "float" "int" Color} {⊙⊙⊙⊙⊙⊙∘}
-# ? Position Size Color
-DrawRectangle ← ◌Rl {"void" "DrawRectangleV" VectorII VectorII Color} {⊙⊙∘}
-# ? Position Size Color
-DrawRectangleLines ← ◌Rl {"void" "DrawRectangleLines" "int" "int" "int" "int" Color} {∩°⊟⊓∩⁅∘}
-# ? Point1 Point2 Point3 Color
-DrawTriangle ← ◌Rl {"void" "DrawTriangle" VectorII VectorII VectorII Color} {⊙⊙⊙∘}
-# ? Point1 Point2 Point3 Color
-DrawTriangleLines ← ◌Rl {"void" "DrawTriangleLines" VectorII VectorII VectorII Color} {⊙⊙⊙∘}
-# ? Center Sides Radius Rotation Color
-DrawPoly ← ◌Rl {"void" "DrawPoly" VectorII "int" "float" "float" Color} {⊙⊙⊙⊙∘}
-# ? Center Sides Radius Rotation Color
-DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" VectorII "int" "float" "float" Color} {⊙⊙⊙⊙∘}
+DrawPixel ← (
+  {Prepare!(Type!Vector₂|Type!Color)}
+  ◌Rl {"void" "DrawPixelV" FFIVector₂ FFIColor}
+)
 
-# Textures Module
+# Draw a line.
+# ? VectorFrom VectorTo Color
+DrawLine ← (
+  {Prepare!(Type!Vector₂|Type!Vector₂|Type!Color)}
+  ◌Rl {"void" "DrawLineV" FFIVector₂ FFIVector₂ FFIColor}
+)
 
+# Draw a line with thickness.
+# ? VectorFrom VectorTo Thickness Color
+DrawLineEx ← (
+  {Prepare!(Type!Vector₂|Type!Vector₂|∘|Type!Color)}
+  ◌Rl {"void" "DrawLineEx" FFIVector₂ FFIVector₂ "float" FFIColor}
+)
+
+# Draw a line strip.
+# ? Vectors Color
+DrawLineStrip ← (
+  {Prepare!(≡Type!Vector₂|Type!Color)}
+  ◌Rl {"void" "DrawLineStrip" $"const _:1"FFIVector₂ "int" FFIColor}
+)
+
+# Draw line segment cubic-bezier in-out interpolation.
+# ? StartPos EndPos Thickness Color
+DrawLineBezier ← ◌Rl {"void" "DrawLineBezier" FFIVector₂ FFIVector₂ "float" FFIColor} {⊙⊙⊙∘}
+
+# Draw a color-filled circle.
+# ? Center Radius Color
+DrawCircle ← ◌Rl {"void" "DrawCircleV" FFIVector₂ "float" FFIColor} {⊙⊙∘}
+
+# Draw circle outline.
+# ? Center Radius Color
+DrawCircleLines ← ◌Rl {"void" "DrawCircleLinesV" FFIVector₂ "float" FFIColor} {⊙⊙∘}
+
+# Draw a color-filled piece of a circle.
+# ? Center Radius StartAngle EndAngle Segments Color
+DrawCircleSector ← (
+  {Prepare!(Type!Vector₂|∘|∘|∘|⁅|Type!Color)}
+  ◌Rl {"void" "DrawCircleSector" FFIVector₂ "float" "float" "float" "int" FFIColor}
+)
+
+# Draw circle sector outline.
+# ? Center Radius StartAngle EndAngle Segments Color
+DrawCircleSectorLines ← (
+  {Prepare!(Type!Vector₂|∘|∘|∘|⁅|Type!Color)}
+  ◌Rl {"void" "DrawCircleSectorLines" FFIVector₂ "float" "float" "float" "int" FFIColor}
+)
+
+# Draw a color-filled ellipse.
+# ? Center HorizontalRadius VerticalRadius Color
+DrawEllipse ← (
+  {Prepare!(°⊟⁅Type!Vector₂|∘|∘|Type!Color)}
+  ◌Rl {"void" "DrawEllipse" "int" "int" "float" "float" FFIColor}
+)
+
+# Draw ellipse outline.
+# ? Center HorizontalRadius VerticalRadius Color
+DrawEllipseLines ← (
+  {Prepare!(°⊟⁅Type!Vector₂|∘|∘|Type!Color)}
+  ◌Rl {"void" "DrawEllipseLines" "int" "int" "float" "float" FFIColor}
+)
+
+# Draw a color-filled ring.
+# ? Center InnerRadius OuterRadius StartAngle EndAngle Segments Color
+DrawRing ← (
+  {Prepare!(Type!Vector₂|∘|∘|∘|∘|⁅|Type!Color)}
+  ◌Rl {"void" "DrawRing" FFIVector₂ "float" "float" "float" "float" "int" FFIColor}
+)
+
+# Draw ring outline.
+# ? Center InnerRadius OuterRadius StartAngle EndAngle Segments FFIColor
+DrawRingLines ← ◌Rl {"void" "DrawRingLines" FFIVector₂ "float" "float" "float" "float" "int" FFIColor} {⊙⊙⊙⊙⊙⊙∘}
+
+# Draw a color-filled rectangle.
+# ? Position Size Color
+DrawRectangle ← ◌Rl {"void" "DrawRectangleV" FFIVector₂ FFIVector₂ FFIColor} {⊙⊙∘}
+
+# Draw rectangle outline.
+# ? Position Size Color
+DrawRectangleLines ← ◌Rl {"void" "DrawRectangleLines" "int" "int" "int" "int" FFIColor} {∩°⊟⊓∩⁅∘}
+
+# Draw a color-filled triangle.
+# ? Point1 Point2 Point3 Color
+DrawTriangle ← ◌Rl {"void" "DrawTriangle" FFIVector₂ FFIVector₂ FFIVector₂ FFIColor} {⊙⊙⊙∘}
+
+# Draw a triangle outline.
+# ? Point1 Point2 Point3 Color
+DrawTriangleLines ← ◌Rl {"void" "DrawTriangleLines" FFIVector₂ FFIVector₂ FFIVector₂ FFIColor} {⊙⊙⊙∘}
+
+# Draw a color-filled polygon with n sides.
+# ? Center Sides Radius Rotation Color
+DrawPoly ← ◌Rl {"void" "DrawPoly" FFIVector₂ "int" "float" "float" FFIColor} {⊙⊙⊙⊙∘}
+
+# Draw a color-filled polygon outline with n sides.
+# ? Center Sides Radius Rotation Color
+DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" FFIVector₂ "int" "float" "float" FFIColor} {⊙⊙⊙⊙∘}
+
+# Draw text using default font.
 # ? Text Position Size Color
-DrawText ← ◌Rl {"void" "DrawText" "const char*" "int" "int" "int" Color} {⊓(∘|°⊟⁅|⊙∘)}
+DrawText ← ◌Rl {"void" "DrawText" "const char*" "int" "int" "int" FFIColor} {⊓(∘|°⊟⁅|⊙∘)}
+
+# Measure string width for default font.
+# Width ? Text Size
+MeasureText ← (
+  {⊙∘}
+  Rl {"int" "MeasureText" "const char*" "int"}
+)
