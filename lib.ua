@@ -24,6 +24,7 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 ~Window {Width Height Title}
 ~Texture {Id Width Height Mipmaps Format}
 ~Vector₂ [X Y]
+~Rectangle [X Y Width Height]
 
 ┌─╴Color
   ~[R G B A]
@@ -132,6 +133,7 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 FFIVector₂ ↚ "{float; float}"
 FFIColor   ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
 FFITexture ↚ "{unsigned int; int; int; int; int}"
+FFIRectangle ↚ "{float; float; float; float}"
 
 # Core Module
 
@@ -365,3 +367,47 @@ MeasureText ← (
   {⊙∘}
   Rl {"int" "MeasureText" "const char*" "int"}
 )
+
+# Load texture from file into GPU memory
+# ? Path
+LoadTexture ← (
+  {∘}
+  Rl {FFITexture "LoadTexture" "const char*"}
+  Type!Texture
+)
+
+# Unload texture from GPU memory
+# ? Texture
+UnloadTexture ← (
+  {Type!Texture}
+  ◌Rl {"void" "UnloadTexture" FFITexture}
+)
+
+# Draw a texture.
+# ? Texture Position TintColor
+DrawTexture ← (
+  {Prepare!(Type!Texture|Type!Vector₂|Type!Color)}
+  ◌Rl {"void" "DrawTextureV" FFITexture FFIVector₂ FFIColor}
+)
+
+# Draw a texture with extended parameters.
+# ? Texture Position Rotation Scale TintColor
+DrawTextureEx ← (
+  {Prepare!(Type!Texture|Type!Vector₂|∘|∘|Type!Color)}
+  ◌Rl {"void" "DrawTextureEx" FFITexture FFIVector₂ "float" "float" FFIColor}
+)
+
+# Draw a part of a texture.
+# ? Texture SourceRectangle Position TintColor
+DrawTextureRec ← (
+  {Prepare!(Type!Texture|Type!Rectangle|Type!Vector₂|Type!Color)}
+  ◌Rl {"void" "DrawTextureRec" FFITexture FFIRectangle FFIVector₂ FFIColor}
+)
+
+# Draw a part of a texture defined by a rectangle with 'pro' parameters
+# ? Texture SourceRectangle DestinationRectangle Origin Rotation TintColor
+DrawTexturePro ← (
+  {Prepare!(Type!Texture|Type!Rectangle|Type!Rectangle|Type!Vector₂|∘|Type!Color)}
+  ◌Rl {"void" "DrawTexturePro" FFITexture FFIRectangle FFIRectangle FFIVector₂ "float" FFIColor}
+)
+
