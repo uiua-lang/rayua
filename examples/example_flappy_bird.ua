@@ -76,7 +76,7 @@ HandleMenuState ← (
 # ? Bird
 DrawBird ← (
   # Uncomment the following line to display the hitbox
-  ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Bird~HitboxRect|R~Color~Green))
+  # ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Bird~HitboxRect|R~Color~Green))
 
   $destination Bird~RenderRect
   $source [×16◿4⌊×8R~GetTime 0 16 16]
@@ -189,7 +189,7 @@ MainLoop ← (
   # Without it, if the pattern matching passes and something
   # goes wrong in the handler - it will try the next state branch,
   # which is not what we want.
-  
+
   ⍣(⍩(HandleMenuState) TestFor!State~Menu
   | ⍩(HandleGameState) TestFor!State~Game
   | ⍩(HandleGameOverState) TestFor!State~GameOver
