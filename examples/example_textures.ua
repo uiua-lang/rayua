@@ -25,7 +25,7 @@ MainLoop ← (
 
   # Crop and draw Louie's face from the texture
   R~DrawTextureRec ⊃(get "cats_texture" °◌|[340 180 200 200]|[25 25]|R~Color~Green)
-  
+
   # Crop and draw Murphy's face from the texture, but streched out
   R~DrawTexturePro ⊃(get "cats_texture" °◌|[30 220 200 200]|[600 100 100 200]|[100 100]|¯15|R~Color~Red)
 

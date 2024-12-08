@@ -130,9 +130,9 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 
 # FFI Structs
 
-FFIVector₂ ↚ "{float; float}"
-FFIColor   ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
-FFITexture ↚ "{unsigned int; int; int; int; int}"
+FFIVector₂   ↚ "{float; float}"
+FFIColor     ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
+FFITexture   ↚ "{unsigned int; int; int; int; int}"
 FFIRectangle ↚ "{float; float; float; float}"
 
 # Core Module
@@ -148,11 +148,11 @@ SetTargetFPS ← ◌Rl {"void" "SetTargetFPS" "int"} {∘}
 
 # Get time in seconds for last frame drawn (delta time)
 # FrameTime ? 
-GetFrameTime ← (Rl {"int" "GetFrameTime"} {})
+GetFrameTime ← (Rl {"float" "GetFrameTime"} {})
 
 # Get elapsed time in seconds since InitWindow
 # ElapsedTime ?
-GetTime ← (Rl {"int" "GetTime"} {})
+GetTime ← (Rl {"double" "GetTime"} {})
 
 # Get current FPS
 # FPS ?
@@ -368,6 +368,13 @@ MeasureText ← (
   Rl {"int" "MeasureText" "const char*" "int"}
 )
 
+# Draw text using the default font, centered around the given position.
+# ? Text Position Size Color
+DrawTextCentered ← (
+  ◡⊃(MeasureText ⊙⋅∘|⋅⋅∘)
+  DrawText :-⊙:÷2⊟
+)
+
 # Load texture from file into GPU memory
 # ? Path
 LoadTexture ← (
@@ -411,3 +418,80 @@ DrawTexturePro ← (
   ◌Rl {"void" "DrawTexturePro" FFITexture FFIRectangle FFIRectangle FFIVector₂ "float" FFIColor}
 )
 
+# Check collision between two rectangles.
+# Boolean ? Rectangle Rectangle
+CheckCollisionRecs ← (
+  {Prepare!(Type!Rectangle|Type!Rectangle)}
+  Rl {"char" "CheckCollisionRecs" FFIRectangle FFIRectangle}
+)
+
+# Check collision between two circles.
+# Boolean ? Center1 Radius1 Center2 Radius2
+CheckCollisionCircles ← (
+  {Prepare!(Type!Vector₂|∘|Type!Vector₂|∘)}
+  Rl {"char" "CheckCollisionCircles" FFIVector₂ "float" FFIVector₂ "float"}
+)
+
+# Check collision between circle and rectangle.
+# Boolean ? Center Radius Rectangle
+CheckCollisionCircleRec ← (
+  {Prepare!(Type!Vector₂|∘|Type!Rectangle)}
+  Rl {"char" "CheckCollisionCircleRec" FFIVector₂ "float" FFIRectangle}
+)
+
+# Check if circle collides with a line created between two points.
+# Boolean ? Center Radius Point1 Point2
+CheckCollisionCircleLine ← (
+  {Prepare!(Type!Vector₂|∘|Type!Vector₂|Type!Vector₂)}
+  Rl {"char" "CheckCollisionCircleLine" FFIVector₂ "float" FFIVector₂ FFIVector₂}
+)
+
+# Check if point is inside rectangle.
+# Boolean ? Point Rectangle
+CheckCollisionPointRec ← (
+  {Prepare!(Type!Vector₂|Type!Rectangle)}
+  Rl {"char" "CheckCollisionPointRec" FFIVector₂ FFIRectangle}
+)
+
+# Check if point is inside circle.
+# Boolean ? Point Center Radius
+CheckCollisionPointCircle ← (
+  {Prepare!(Type!Vector₂|Type!Vector₂|∘)}
+  Rl {"char" "CheckCollisionPointCircle" FFIVector₂ FFIVector₂ "float"}
+)
+
+# Check if point is inside a triangle.
+# Boolean ? Point Point1 Point2 Point3
+CheckCollisionPointTriangle ← (
+  {Prepare!(Type!Vector₂|Type!Vector₂|Type!Vector₂|Type!Vector₂)}
+  Rl {"char" "CheckCollisionPointTriangle" FFIVector₂ FFIVector₂ FFIVector₂ FFIVector₂}
+)
+
+# Check if point belongs to line created between two points.
+# Boolean ? Point Point1 Point2 Threshold
+CheckCollisionPointLine ← (
+  {Prepare!(Type!Vector₂|Type!Vector₂|Type!Vector₂|∘)}
+  Rl {"char" "CheckCollisionPointLine" FFIVector₂ FFIVector₂ FFIVector₂ "int"}
+)
+
+# Check if point is within a polygon described by array of vertices.
+# Boolean ? Point Points
+CheckCollisionPointPoly ← (
+  {Prepare!(Type!Vector₂|≡Type!Vector₂)}
+  Rl {"char" "CheckCollisionPointPoly" FFIVector₂ $"const _:2"FFIVector₂ "int"}
+)
+
+# Check the collision between two lines defined by two points each.
+# Boolean ? StartPos1 EndPos1 StartPos2 EndPos2
+CheckCollisionLines ← (
+  {Prepare!(Type!Vector₂|Type!Vector₂|Type!Vector₂|Type!Vector₂)}
+  Rl {"char" "CheckCollisionLines" FFIVector₂ FFIVector₂ FFIVector₂ FFIVector₂}
+)
+
+# Get the intersection of two rectangles.
+# Rectangle ? Rectangle Rectangle
+GetCollisionRec ← (
+  {Prepare!(Type!Rectangle|Type!Rectangle)}
+  Rl {FFIRectangle "GetCollisionRec" FFIRectangle FFIRectangle}
+  Type!Rectangle
+)
