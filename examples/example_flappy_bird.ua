@@ -175,8 +175,7 @@ MainLoop ← (
   R~EndDrawing
 )
 
-# CreateGameState
-CreateGameOverState 55
+State~Menu
 
 map {} {}
 insert∩□ "bird_sprite" R~LoadTexture RelativeFile "bird.png"
