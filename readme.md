@@ -26,4 +26,5 @@ Available examples:
 - `example_minimal.ua` - Minimal Rayua application.
 - `example_mouse.ua` - Demonstrates mouse handling.
 - `example_shapes.ua` - Demonstrates drawing shapes.
-
+- `example_textures.ua` - Demonstrates loading and drawing textures.
+- `example_flappy_bird.ua` - A flappy bird game example
