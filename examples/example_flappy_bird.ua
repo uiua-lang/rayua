@@ -185,6 +185,11 @@ MainLoop ← (
   R~ClearBackground R~Color~SkyBlue
   R~BeginDrawing
 
+  # Note the usage of ⍩ - it allows errors to happen in that branch.
+  # Without it, if the pattern matching passes and something
+  # goes wrong in the handler - it will try the next state branch,
+  # which is not what we want.
+  
   ⍣(⍩(HandleMenuState) TestFor!State~Menu
   | ⍩(HandleGameState) TestFor!State~Game
   | ⍩(HandleGameOverState) TestFor!State~GameOver
