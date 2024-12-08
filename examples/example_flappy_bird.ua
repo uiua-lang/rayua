@@ -1,6 +1,25 @@
 # Experimental!
 R ~ "../lib"
 
+# This is an example of a Flappy Bird game.
+# It demonstrates how to create multiple game screens, handle user input, render textures.
+
+# The main idea for different screens is to use a state value with the properties of that state.
+# The state is then pattern matched to determine which handler to use.
+# - The main menu state does not have any properties, it just waits for the user to press space and transitions to the game state.
+# - The game state has properties for the bird, pipes, and score.
+# - The game over state has a property for the score.
+
+# The handler state takes the current state and returns the next state.
+# In the main menu and game over states, the handler just draws the corresponding screen and waits for the user to press space.
+# to transition to the next state - the game state. The game state then handles the main game logic:
+# - Checking if the bird is colliding with anything
+# - Updating applying gravity to the bird
+# - Moving the pipes
+# - Scoring points
+# - Drawing the screen
+# - Handling user input
+
 BirdX             ← 100
 Gravity           ← 0.5
 JumpSpeed         ← ¯10
@@ -9,7 +28,7 @@ PipeGap           ← 90
 PipeMovementSpeed ← 4
 GapsBetweenPipes  ← 300
 
-R~InitWindow 640 480 "Rayua minimal example"
+R~InitWindow 640 480 "Rayua Flappy Bird"
 R~SetTargetFPS 60
 
 # ? X Y W H
@@ -56,7 +75,7 @@ HandleMenuState ← (
 
 # ? Bird
 DrawBird ← (
-  # Uncmment the collowing line to display the hitbox
+  # Uncomment the following line to display the hitbox
   ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Bird~HitboxRect|R~Color~Green))
 
   $destination Bird~RenderRect
@@ -65,7 +84,7 @@ DrawBird ← (
 )
 
 DrawTopPipe ← (
-  # Uncmment the collowing line to display the hitbox
+  # Uncomment the following line to display the hitbox
   # ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Pipe~TopRect|R~Color~Green))
 
   ⊃($destination [⊃(Pipe~X|-64Pipe~Top|64|64)]
@@ -78,7 +97,7 @@ DrawTopPipe ← (
 )
 
 DrawBottomPipe ← |1.0 (
-  # Uncmment the collowing line to display the hitbox
+  # Uncomment the following line to display the hitbox
   # ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Pipe~BottomRect|R~Color~Green))
 
   ⊃($destination [⊃(Pipe~X|Pipe~Bottom|64|64)]
