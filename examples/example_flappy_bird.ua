@@ -45,7 +45,7 @@ CenteredSquare ← CenteredRect ⊙⊙.
 └─╴
 
 ┌─╴Pipe
-  ~[X Top Bottom Scored]
+  ~[X Top Bottom Scored Id]
 
   TopRect    ← [⊃(X|0|64|Top)]
   BottomRect ← [⊃(X|Bottom|64|-:480Bottom)]
@@ -60,11 +60,11 @@ CenteredSquare ← CenteredRect ⊙⊙.
 RelativeFile ← $".____" Sep ThisFileDir Sep
 
 SpawnBird           ← Bird 240 0
-SpawnPipe           ← Pipe ⊃(∘|°⊟+⊟¯.PipeGap +150×200⚂|0)
+SpawnPipe           ← Pipe ⊃(∘|°⊟+⊟¯.PipeGap +150×200⚂|0|⌊×1000⚂)
 CreateGameState     ← State~Game⊃(SpawnBird|≡SpawnPipe +500×GapsBetweenPipes⇡4|0)
 CreateGameOverState ← State~GameOver $score
 
-HandleMenuState ← (
+HandleMenuState ← |1 (
   R~DrawTextCentered "Uiua Bird" [320 180] 60 R~Color~Black
   R~DrawTextCentered "Press space to start" [320 280] 40 R~Color~Black
 
@@ -83,34 +83,36 @@ DrawBird ← (
   R~DrawTexturePro ⊃(°□get "bird_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
 )
 
-DrawTopPipe ← (
+# ? Pipe
+DrawTopPipe ← |1.0 (
   # Uncomment the following line to display the hitbox
   # ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Pipe~TopRect|R~Color~Green))
 
-  ⊃($destination [⊃(Pipe~X|-64Pipe~Top|64|64)]
-    $source [0 48 32 32]
+  ⊃(⊃($source [×32◿4 Pipe~Id ⊙(48 32 32)]
+    | $destination [⊃(Pipe~X|-64Pipe~Top|64|64)])
     R~DrawTexturePro ⊃(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
-  | $destination [⊃(Pipe~X|0|64|-64Pipe~Top)]
-    $source [0 24 32 32]
+  | ⊃($source [×32◿4 Pipe~Id ⊙(24 32 32)]
+    | $destination [⊃(Pipe~X|0|64|-64Pipe~Top)])
     R~DrawTexturePro ⊃(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
   )
 )
 
+# ? Pipe
 DrawBottomPipe ← |1.0 (
   # Uncomment the following line to display the hitbox
   # ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Pipe~BottomRect|R~Color~Green))
 
-  ⊃($destination [⊃(Pipe~X|Pipe~Bottom|64|64)]
-    $source [0 0 32 32]
+  ⊃(⊃($source [×32◿4 Pipe~Id ⊙(0 32 32)]
+    | $destination [⊃(Pipe~X|Pipe~Bottom|64|64)])
     R~DrawTexturePro ⊃(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
-  | $destination [⊃(Pipe~X|+64Pipe~Bottom|64|-:480Pipe~Bottom)]
-    $source [0 24 32 32]
+  | ⊃($source [×32◿4 Pipe~Id ⊙(24 32 32)]
+    | $destination [⊃(Pipe~X|+64Pipe~Bottom|64|-:480Pipe~Bottom)])
     R~DrawTexturePro ⊃(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
   )
 )
 
 # ? Pipes
-DrawPipes ← ≡⊃(DrawTopPipe|DrawBottomPipe)
+DrawPipes ← ≡⊃(DrawTopPipe+1|DrawBottomPipe)
 
 # ? Score
 DrawScore ← R~DrawText⊃($"Score: _"∘|[20 20]|20|R~Color~Black)
