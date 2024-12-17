@@ -28,7 +28,10 @@ PipeGap           ← 90
 PipeMovementSpeed ← 4
 GapsBetweenPipes  ← 300
 
-R~InitWindow 640 480 "Rayua Flappy Bird"
+WindowWidth  ← 640
+WindowHeight ← 480
+
+R~InitWindow WindowWidth WindowHeight "Rayua Flappy Bird"
 R~SetTargetFPS 60
 
 # ? X Y W H
@@ -40,7 +43,10 @@ CenteredSquare ← CenteredRect ⊙⊙.
 ┌─╴Bird
   ~[Y YSpeed]
 
-  RenderRect ← CenteredSquare ⊃(BirdX|Y|48)
+  Size         ← ⊟.48
+  SpriteOrigin ← ÷2Size
+  # Assumes sprite-centered origin
+  RenderRect ← ⊂[BirdX Y]⟜Size
   HitboxRect ← CenteredSquare ⊃(BirdX|+2Y|35)
 └─╴
 
@@ -54,15 +60,14 @@ CenteredSquare ← CenteredRect ⊙⊙.
 ┌─╴State
   |Menu
   |Game {Bird Pipes Score}
-  |GameOver {Score}
+  |GameOver {Bird Pipes Score DeathTime}
 └─╴
 
 RelativeFile ← $".____" Sep ThisFileDir Sep
 
-SpawnBird           ← Bird 240 0
-SpawnPipe           ← Pipe ⊃(∘|°⊟+⊟¯.PipeGap +150×200⚂|0|⌊×1000⚂)
-CreateGameState     ← State~Game⊃(SpawnBird|≡SpawnPipe +500×GapsBetweenPipes⇡4|0)
-CreateGameOverState ← State~GameOver $score
+SpawnBird       ← Bird 240 0
+SpawnPipe       ← Pipe ⊃(∘|°⊟+⊟¯.PipeGap +150×200⚂|0|⌊×1000⚂)
+CreateGameState ← State~Game⊃(SpawnBird|≡SpawnPipe +500×GapsBetweenPipes⇡4|0)
 
 HandleMenuState ← |1 (
   R~DrawTextCentered "Uiua Bird" [320 180] 60 R~Color~Black
@@ -73,14 +78,16 @@ HandleMenuState ← |1 (
   ⍥(CreateGameState◌)
 )
 
-# ? Bird
+# ? ShouldAnimate Bird
 DrawBird ← (
   # Uncomment the following line to display the hitbox
   # ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Bird~HitboxRect|R~Color~Green))
 
-  $destination Bird~RenderRect
-  $source [×16◿4⌊×8R~GetTime 0 16 16]
-  R~DrawTexturePro ⊃(°□get "bird_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
+  ⊙(⟜($rotation ×3Bird~YSpeed)
+    ⟜($origin Bird~SpriteOrigin)
+    $destination Bird~RenderRect)
+  $source [×16◿4⌊×8×R~GetTime ⊙(0 16 16)]
+  R~DrawTexturePro ⊓(°□get "bird_sprite" °◌|⊙∘|∘|∘|R~Color~White)
 )
 
 # ? Pipe
@@ -90,10 +97,10 @@ DrawTopPipe ← |1.0 (
 
   ⊃(⊃($source [×32◿4 Pipe~Id ⊙(48 32 32)]
     | $destination [⊃(Pipe~X|-64Pipe~Top|64|64)])
-    R~DrawTexturePro ⊃(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
+    R~DrawTexturePro ⊓(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
   | ⊃($source [×32◿4 Pipe~Id ⊙(24 32 32)]
     | $destination [⊃(Pipe~X|0|64|-64Pipe~Top)])
-    R~DrawTexturePro ⊃(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
+    R~DrawTexturePro ⊓(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
   )
 )
 
@@ -103,11 +110,11 @@ DrawBottomPipe ← |1.0 (
   # ⟜(R~DrawRectangleLines ⊃(∩⊟°⊟₄Pipe~BottomRect|R~Color~Green))
 
   ⊃(⊃($source [×32◿4 Pipe~Id ⊙(0 32 32)]
-    | $destination [⊃(Pipe~X|Pipe~Bottom|64|64)])
-    R~DrawTexturePro ⊃(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
+    | $destination [Pipe!⊃(X|Bottom|64|64)])
+    R~DrawTexturePro ⊓(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
   | ⊃($source [×32◿4 Pipe~Id ⊙(24 32 32)]
-    | $destination [⊃(Pipe~X|+64Pipe~Bottom|64|-:480Pipe~Bottom)])
-    R~DrawTexturePro ⊃(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
+    | $destination [Pipe!⊃(X|+64Bottom|64|-:480Bottom)])
+    R~DrawTexturePro ⊓(°□get "pipes_sprite" °◌|⊙∘|[0 0]|0|R~Color~White)
   )
 )
 
@@ -122,20 +129,19 @@ ShouldBeScored ← /↧[⊃(< BirdX +64Pipe~X|¬Pipe~Scored)]
 IsOutOfBounds ← /↥[⊃(<0|>480)] Bird~Y State~Game~Bird
 IsCollidingWithPipes ← (
   ⊃(¤Bird~HitboxRect State~Game~Bird
-  | ♭₂[≡⊃(Pipe~TopRect|Pipe~BottomRect)] State~Game~Pipes)
+  | ♭₂[≡Pipe!⊃TopRect BottomRect] State~Game~Pipes)
   /↥≡(R~CheckCollisionRecs)
 )
-IsBirdDead ← /↥[⊃(IsOutOfBounds|IsCollidingWithPipes)]
+IsBirdDead ← /↥[⊃IsOutOfBounds IsCollidingWithPipes]
 
 HandleGameState ← (
   ⊸(¬IsBirdDead)
-  ⨬( # the bird colided with something, go to game over state
-    CreateGameOverState State~Game~Score
+  ⨬( # The bird collided with something, go to game over state and log the time of death
+    State!(GameOver °Game) ⊙R~GetTime
   | # The bird is still alive, update the game state
 
     # Add speed to bird position
-    ⟜(+⊃(Bird~Y|Bird~YSpeed) State~Game~Bird)
-    ⍜(Bird~Y State~Game~Bird)⋅∘
+    ⍜State~Game~Bird Bird!(⍜Y+⟜YSpeed)
 
     # Increment vertical bird speed
     ⍜(Bird~YSpeed State~Game~Bird|+Gravity)
@@ -161,8 +167,8 @@ HandleGameState ← (
     ⍥(⍜(State~Game~Pipes|⊂SpawnPipe +240 ×3GapsBetweenPipes))
 
     # Draw screen
-    ⟜(DrawBird State~Game~Bird)
     ⟜(DrawPipes State~Game~Pipes)
+    ⟜(DrawBird 1 State~Game~Bird)
     ⟜(DrawScore State~Game~Score)
 
     # When space is pressed - jump
@@ -172,9 +178,30 @@ HandleGameState ← (
 )
 
 HandleGameOverState ← (
+  # Add speed to bird position
+  ⍜State~GameOver~Bird Bird!(
+    ⍜Y+⟜YSpeed
+    # If the bird goes below the screen, clamp position and
+    # set speed so that the rotation is straight down
+    ⤚>-⊢Bird~SpriteOrigin WindowHeight⊸Y
+    ⨬⋅∘(⍜YSpeed⋅30 ⍜⊙Y⊙◌)
+  )
+
+  # Increment vertical bird speed
+  ⍜(Bird~YSpeed State~GameOver~Bird|+Gravity)
+
+  # Draw screen
+  ⟜(DrawPipes State~GameOver~Pipes)
+  ⟜(DrawBird 0 State~GameOver~Bird)
+  ⟜(DrawScore State~GameOver~Score)
+
   R~DrawTextCentered "Game over" [320 180] 40 R~Color~Black
   ⟜(R~DrawTextCentered⊃($"Your score: _" State~GameOver~Score|[320 250] 40 R~Color~Black))
   R~DrawTextCentered "Press space to restart" [320 320] 20 R~Color~Black
+
+  # Draw white flash with opacity based on the time elapsed since game over
+  ↥0+1-R~GetTime⊸State~GameOver~DeathTime
+  R~DrawRectangle [0 0] [WindowWidth WindowHeight] ⍜⊣× R~Color~White
 
   # When space is pressed - create a new game state
   R~IsKeyPressed @\s
