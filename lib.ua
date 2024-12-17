@@ -5,6 +5,7 @@ GetLibraryPath ← memo(
     "_win32.dll" °{"windows" "x86"}
   | "_win64.dll" °{"windows" "x86_64"}
   | ⍩(⍤"Unsupported architecture."0) ◌ °{"windows" ∘}
+  | ".dylib" °{"macos" "aarch64"}
   | ".so"
   )
   {"." ThisFileDir ∘}
