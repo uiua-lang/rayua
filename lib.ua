@@ -163,8 +163,35 @@ GetFPS ← (Rl {"int" "GetFPS"} {})
 # Boolean ?
 WindowShouldClose ← (Rl {"int" "WindowShouldClose"} {})
 
+# Check if window is currently fullscreen
+# Boolean ?
+IsWindowFullscreen ← (Rl {"int" "IsWindowFullscreen"} {})
+
+# Toggle window state: fullscreen/windowed, resizes monitor to match window resolution
+ToggleFullscreen ← (◌ Rl {"void" "ToggleFullscreen"} {})
+
 # Close window and unload OpenGL context.
 CloseWindow ← (◌Rl {"void" "CloseWindow"} {})
+
+# Get current screen width
+# Width ?
+GetScreenWidth ← (Rl {"int" "GetScreenWidth"} {})
+
+# Get current screen height
+# Height ?
+GetScreenHeight ← (Rl {"int" "GetScreenHeight"} {})
+
+# Get current render width (it considers HiDPI)
+# Width ?
+GetRenderWidth ← (Rl {"int" "GetRenderWidth"} {})
+
+# Get current render height (it considers HiDPI)
+# Height ?
+GetRenderHeight ← (Rl {"int" "GetRenderHeight"} {})
+
+# Set window dimensions
+# ? WindowWidth WindowHeight
+SetWindowSize ← (◌Rl {"void" "SetWindowSize" "int" "int"} {⊙∘})
 
 # Set background color (framebuffer clear color)
 # ? Color
@@ -218,6 +245,14 @@ ShowCursor ← (◌Rl {"void" "ShowCursor"} {})
 
 # Hides cursor.
 HideCursor ← (◌Rl {"void" "HideCursor"} {})
+
+# Check if cursor is not visible
+# Boolean ?
+IsCursorHidden ← (Rl {"int" "IsCursorHidden"} {})
+
+# Check if cursor is on the screen
+# Boolean ?
+IsCursorOnScreen ← (Rl {"int" "IsCursorOnScreen"} {})
 
 KeyCode ↚ ⍥(-@\0⌵)⊸type
 
