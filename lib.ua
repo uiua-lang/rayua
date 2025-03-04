@@ -20,7 +20,7 @@ LibraryVersion ← "5.5"
 Type!    ↚^ $"⍜°_∘"⊢
 Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 
-# Structs 
+# Structs
 
 ~Window {Width Height Title}
 ~Texture {Id Width Height Mipmaps Format}
@@ -29,7 +29,7 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 
 ┌─╴Color
   ~[R G B A]
-  
+
   LightGray  ← $LightGray New 200 200 200 255
   Gray       ← $Gray New 130 130 130 255
   DarkGray   ← $DarkGray New 80 80 80 255
@@ -109,7 +109,7 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
   RightAlt     ← 346
   RightSuper   ← 347
   Menu         ← 348
-  
+
   Kp₀        ← 320
   Kp₁        ← 321
   Kp₂        ← 322
@@ -127,6 +127,25 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
   KpAdd      ← 334
   KpEnter    ← 335
   KpEqual    ← 336
+└─╴
+
+┌─╴ConfigFlags
+  VsyncHint              ← 64    # 0x00000040
+  FullscreenMode         ← 2     # 0x00000002
+  WindowResizable        ← 4     # 0x00000004
+  WindowUndecorated      ← 8     # 0x00000008
+  WindowHidden           ← 128   # 0x00000080
+  WindowMinimized        ← 512   # 0x00000200
+  WindowMaximized        ← 1024  # 0x00000400
+  WindowUnfocused        ← 2048  # 0x00000800
+  WindowTopmost          ← 4096  # 0x00001000
+  WindowAlwaysRun        ← 256   # 0x00000100
+  WindowTransparent      ← 16    # 0x00000010
+  WindowHighdpi          ← 8192  # 0x00002000
+  WindowMousePassthrough ← 16384 # 0x00004000
+  BorderlessWindowedMode ← 32768 # 0x00008000
+  MSAAHint₄              ← 32    # 0x00000020
+  InterlacedHint         ← 65536 # 0x00010000
 └─╴
 
 # FFI Structs
@@ -163,9 +182,49 @@ GetFPS ← (Rl {"int" "GetFPS"} {})
 # Boolean ?
 WindowShouldClose ← (Rl {"int" "WindowShouldClose"} {})
 
+# Check if window has been initialized successfully
+# Boolean ?
+IsWindowReady ← (Rl {"int" "IsWindowReady"} {})
+
 # Check if window is currently fullscreen
 # Boolean ?
 IsWindowFullscreen ← (Rl {"int" "IsWindowFullscreen"} {})
+
+# Check if window is currently hidden
+# Boolean ?
+IsWindowHidden ← (Rl {"int" "IsWindowHidden"} {})
+
+# Check if window is currently minimized
+# Boolean ?
+IsWindowMinimized ← (Rl {"int" "IsWindowMinimized"} {})
+
+# Check if window is currently maximized
+# Boolean ?
+IsWindowMaximized ← (Rl {"int" "IsWindowMaximized"} {})
+
+# Check if window is currently focused
+# Boolean ?
+IsWindowFocused ← (Rl {"int" "IsWindowFocused"} {})
+
+# Check if window has been resized last frame
+# Boolean ?
+IsWindowResized ← (Rl {"int" "IsWindowResized"} {})
+
+# Check if one specific window flag is enabled
+# Boolean ? Flag
+IsWindowState ← (Rl {"int" "IsWindowState" "unsigned int"} {∘})
+
+# Set window configuration state using flags
+# ? Flags
+SetWindowState ← (◌Rl {"void" "SetWindowState" "unsigned int"} {∘})
+
+# Clear window configuration state flags
+# ? Flags
+ClearWindowState ← (◌Rl {"void" "ClearWindowState" "Unsigned int"} {∘})
+
+# Setup init configuration flags (view ConfigFlags)
+# ? Flags
+SetConfigFlags ← (◌Rl {"void" "SetConfigFlags" "unsigned int"} {∘})
 
 # Toggle window state: fullscreen/windowed, resizes monitor to match window resolution
 ToggleFullscreen ← (◌ Rl {"void" "ToggleFullscreen"} {})
