@@ -189,6 +189,18 @@ GetRenderWidth ← (Rl {"int" "GetRenderWidth"} {})
 # Height ?
 GetRenderHeight ← (Rl {"int" "GetRenderHeight"} {})
 
+# Get current monitor where window is placed
+# Monitor ?
+GetCurrentMonitor ← (Rl {"int" "GetCurrentMonitor"} {})
+
+# Get specified monitor width (current video mode used by monitor)
+# Width ? Monitor
+GetMonitorWidth ← (Rl {"int" "GetMonitorWidth" "int"} {∘})
+
+# Get specified monitor height (current video mode used by monitor)
+# Height ? Monitor
+GetMonitorHeight ← (Rl {"int" "GetMonitorHeight" "int"} {∘})
+
 # Set window dimensions
 # ? WindowWidth WindowHeight
 SetWindowSize ← (◌Rl {"void" "SetWindowSize" "int" "int"} {⊙∘})
