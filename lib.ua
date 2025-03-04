@@ -130,7 +130,7 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 └─╴
 
 ┌─╴ConfigFlags
-  VsyncHint              ← 64    # 0x00000040
+  VSyncHint              ← 64    # 0x00000040
   FullscreenMode         ← 2     # 0x00000002
   WindowResizable        ← 4     # 0x00000004
   WindowUndecorated      ← 8     # 0x00000008
@@ -141,7 +141,7 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
   WindowTopmost          ← 4096  # 0x00001000
   WindowAlwaysRun        ← 256   # 0x00000100
   WindowTransparent      ← 16    # 0x00000010
-  WindowHighdpi          ← 8192  # 0x00002000
+  WindowHighDPI          ← 8192  # 0x00002000
   WindowMousePassthrough ← 16384 # 0x00004000
   BorderlessWindowedMode ← 32768 # 0x00008000
   MSAAHint₄              ← 32    # 0x00000020
