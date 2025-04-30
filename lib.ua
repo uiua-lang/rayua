@@ -1,6 +1,6 @@
 # Experimental!
 GetLibraryPath ← memo(
-  {Os Arch}
+  {os arch}
   $"bin/raylib_" ⍣(
     "_win32.dll" °{"windows" "x86"}
   | "_win64.dll" °{"windows" "x86_64"}
@@ -9,7 +9,7 @@ GetLibraryPath ← memo(
   | ".so"
   )
   {"." ThisFileDir ∘}
-  /($"___" ⊙Sep)
+  /($"___" ⊙pathsep)
 )
 
 Rl             ← &ffi ⊂□GetLibraryPath
