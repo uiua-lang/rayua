@@ -353,7 +353,7 @@ GetKeyPressed ← (Rl {"int" "GetKeyPressed"} {})
 
 # Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty.
 # Char ?
-GetCharPressed ← +@\0 (Rl {"int" "GetCharPressed"} {})
+GetCharPressed ← (+@\0 Rl {"int" "GetCharPressed"} {})
 
 # Set a custom key to exit program (default is ESC).
 # ? Char
