@@ -23,12 +23,21 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 # Structs
 
 ~Window {Width Height Title}
+~Image {Data Width Height Mipmaps Format}
 ~Texture {Id Width Height Mipmaps Format}
 ~Vector₂ [X Y]
 ~Rectangle [X Y Width Height]
 
+# FFI Structs
+
+FFIVector₂   ↚ "{float; float}"
+FFIColor     ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
+FFIImage     ↚ "{const unsigned char**; int; int; int; int;}"
+FFITexture   ↚ "{unsigned int; int; int; int; int}"
+FFIRectangle ↚ "{float; float; float; float}"
+
 ┌─╴Color
-  ~[R G B A]
+  ~ [R G B A]
 
   LightGray  ← $LightGray New 200 200 200 255
   Gray       ← $Gray New 130 130 130 255
@@ -148,13 +157,6 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
   InterlacedHint         ← 65536 # 0x00010000
 └─╴
 
-# FFI Structs
-
-FFIVector₂   ↚ "{float; float}"
-FFIColor     ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
-FFITexture   ↚ "{unsigned int; int; int; int; int}"
-FFIRectangle ↚ "{float; float; float; float}"
-
 # Core Module
 
 # Initialize window and OpenGL context.
@@ -162,12 +164,12 @@ FFIRectangle ↚ "{float; float; float; float}"
 # ? WindowWidth WindowHeight WindowTitle
 InitWindow ← ◌Rl {"void" "InitWindow" "int" "int" "const char*"} Window
 
-# Set the target FPS (maximum). 
+# Set the target FPS (maximum).
 # ? TargetFPS
 SetTargetFPS ← ◌Rl {"void" "SetTargetFPS" "int"} {∘}
 
 # Get time in seconds for last frame drawn (delta time)
-# FrameTime ? 
+# FrameTime ?
 GetFrameTime ← (Rl {"float" "GetFrameTime"} {})
 
 # Get elapsed time in seconds since InitWindow
@@ -480,6 +482,14 @@ MeasureText ← (
 DrawTextCentered ← (
   ◡⊃(MeasureText ⊙⋅∘|⋅⋅∘)
   DrawText :-⊙:÷2⊟
+)
+
+# Load texture from image data
+# ? Image
+LoadTextureFromImage ← (
+  {Type!Image}
+  Rl {FFITexture "LoadTextureFromImage" FFIImage}
+  Type!Texture
 )
 
 # Load texture from file into GPU memory
