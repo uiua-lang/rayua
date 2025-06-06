@@ -17,8 +17,7 @@ LibraryVersion ← "5.5"
 
 # Utils
 
-Type!    ↚^ $"⍜°_∘"⊢
-Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
+Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 
 # Structs
 
@@ -32,7 +31,7 @@ Prepare! ↚^ $"⊃(_)" /$"_|_"≡(□$"_(_)"▽:@⋅:)⟜(⇡⧻)
 
 FFIVector₂   ↚ "{float; float}"
 FFIColor     ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
-FFIImage     ↚ "{const unsigned char**; int; int; int; int;}"
+FFIImage     ↚ "{const unsigned char*; int; int; int; int;}"
 FFITexture   ↚ "{unsigned int; int; int; int; int}"
 FFIRectangle ↚ "{float; float; float; float}"
 
@@ -268,7 +267,7 @@ SetWindowSize ← (◌Rl {"void" "SetWindowSize" "int" "int"} {⊙∘})
 
 # Set background color (framebuffer clear color)
 # ? Color
-ClearBackground ← ◌Rl {"void" "ClearBackground" FFIColor} {Type!(Color)}
+ClearBackground ← ◌Rl {"void" "ClearBackground" FFIColor} {Types!(Color)}
 
 # Setup canvas (framebuffer) to start drawing.
 BeginDrawing ← (◌Rl {"void" "BeginDrawing"} {})
@@ -294,24 +293,15 @@ IsMouseButtonUp ← Rl {"char" "IsMouseButtonUp" "int"} {∘}
 
 # Get the current mouse position.
 # Vector2 ?
-GetMousePosition ← (
-  (Rl {FFIVector₂ "GetMousePosition"} {})
-  Type!Vector₂
-)
+GetMousePosition ← (Types!Vector₂ (Rl {FFIVector₂ "GetMousePosition"} {}))
 
 # Get mouse delta between frames.
 # Vector2 ?
-GetMouseDelta ← (
-  (Rl {FFIVector₂ "GetMouseDelta"} {})
-  Type!Vector₂
-)
+GetMouseDelta ← (Types!Vector₂ (Rl {FFIVector₂ "GetMouseDelta"} {}))
 
 # Set mouse position.
 # ? Vector2
-SetMousePosition ← (
-  Type!Vector₂ {°⊟⁅}
-  ◌Rl {"void" "SetMousePosition" "int" "int"}
-)
+SetMousePosition ← ◌Rl {"void" "SetMousePosition" "int" "int"} {°⊟⁅}
 
 # Shows cursor.
 ShowCursor ← (◌Rl {"void" "ShowCursor"} {})
@@ -366,28 +356,28 @@ SetExitKey ← ◌Rl {"void" "SetExitKey" "int"} {KeyCode}
 # Draw a pixel using geometry [Can be slow, use with care].
 # ? Position Color
 DrawPixel ← (
-  {Prepare!(Type!Vector₂|Type!Color)}
+  {Types!(Vector₂|Color)}
   ◌Rl {"void" "DrawPixelV" FFIVector₂ FFIColor}
 )
 
 # Draw a line.
 # ? VectorFrom VectorTo Color
 DrawLine ← (
-  {Prepare!(Type!Vector₂|Type!Vector₂|Type!Color)}
+  {Types!(Vector₂|Vector₂|Color)}
   ◌Rl {"void" "DrawLineV" FFIVector₂ FFIVector₂ FFIColor}
 )
 
 # Draw a line with thickness.
 # ? VectorFrom VectorTo Thickness Color
 DrawLineEx ← (
-  {Prepare!(Type!Vector₂|Type!Vector₂|∘|Type!Color)}
+  {Types!(Vector₂|Vector₂|∘|Color)}
   ◌Rl {"void" "DrawLineEx" FFIVector₂ FFIVector₂ "float" FFIColor}
 )
 
 # Draw a line strip.
 # ? Vectors Color
 DrawLineStrip ← (
-  {Prepare!(≡Type!Vector₂|Type!Color)}
+  {Types!(≡Vector₂|Color)}
   ◌Rl {"void" "DrawLineStrip" $"const _:1"FFIVector₂ "int" FFIColor}
 )
 
@@ -406,35 +396,35 @@ DrawCircleLines ← ◌Rl {"void" "DrawCircleLinesV" FFIVector₂ "float" FFICol
 # Draw a color-filled piece of a circle.
 # ? Center Radius StartAngle EndAngle Segments Color
 DrawCircleSector ← (
-  {Prepare!(Type!Vector₂|∘|∘|∘|⁅|Type!Color)}
+  {Types!(Vector₂|∘|∘|∘|⁅|Color)}
   ◌Rl {"void" "DrawCircleSector" FFIVector₂ "float" "float" "float" "int" FFIColor}
 )
 
 # Draw circle sector outline.
 # ? Center Radius StartAngle EndAngle Segments Color
 DrawCircleSectorLines ← (
-  {Prepare!(Type!Vector₂|∘|∘|∘|⁅|Type!Color)}
+  {Types!(Vector₂|∘|∘|∘|⁅|Color)}
   ◌Rl {"void" "DrawCircleSectorLines" FFIVector₂ "float" "float" "float" "int" FFIColor}
 )
 
 # Draw a color-filled ellipse.
 # ? Center HorizontalRadius VerticalRadius Color
 DrawEllipse ← (
-  {Prepare!(°⊟⁅Type!Vector₂|∘|∘|Type!Color)}
+  {Types!(°⊟⁅|∘|∘|Color)}
   ◌Rl {"void" "DrawEllipse" "int" "int" "float" "float" FFIColor}
 )
 
 # Draw ellipse outline.
 # ? Center HorizontalRadius VerticalRadius Color
 DrawEllipseLines ← (
-  {Prepare!(°⊟⁅Type!Vector₂|∘|∘|Type!Color)}
+  {Types!(°⊟⁅|∘|∘|Color)}
   ◌Rl {"void" "DrawEllipseLines" "int" "int" "float" "float" FFIColor}
 )
 
 # Draw a color-filled ring.
 # ? Center InnerRadius OuterRadius StartAngle EndAngle Segments Color
 DrawRing ← (
-  {Prepare!(Type!Vector₂|∘|∘|∘|∘|⁅|Type!Color)}
+  {Types!(Vector₂|∘|∘|∘|∘|⁅|Color)}
   ◌Rl {"void" "DrawRing" FFIVector₂ "float" "float" "float" "float" "int" FFIColor}
 )
 
@@ -472,143 +462,152 @@ DrawText ← ◌Rl {"void" "DrawText" "const char*" "int" "int" "int" FFIColor} 
 
 # Measure string width for default font.
 # Width ? Text Size
-MeasureText ← (
-  {⊙∘}
-  Rl {"int" "MeasureText" "const char*" "int"}
-)
+MeasureText ← Rl {"int" "MeasureText" "const char*" "int"} {⊙∘}
 
 # Draw text using the default font, centered around the given position.
 # ? Text Position Size Color
-DrawTextCentered ← (
-  ◡⊃(MeasureText ⊙⋅∘|⋅⋅∘)
-  DrawText :-⊙:÷2⊟
+DrawTextCentered ← DrawText :-⊙:÷2⊟ ◡⊃(MeasureText ⊙⋅∘|⋅⋅∘)
+
+# Generate image: plain color
+# ? Width Height Color
+GenImageColor ← (
+  {Types!(∘|∘|Color)}
+  Rl {FFIImage "GenImageColor" "int" "int" FFIColor}
+  Types!Image
 )
+
+# Unload image from CPU memory (RAM)
+# ? Image
+UnloadImage ← ◌ Rl {"void" "UnloadImage" FFIImage} {Types!Image}
+
+# Load image from screen buffer and (screenshot)
+LoadImageFromScreen ← (Types!Image Rl {FFIImage "LoadImageFromScreen"} {})
+
+# Load image from GPU texture data
+# ? Texture
+LoadImageFromTexture ← Types!Image Rl {FFIImage "LoadImageFromTexture" FFITexture} {Types!Texture}
 
 # Load texture from image data
 # ? Image
-LoadTextureFromImage ← (
-  {Type!Image}
-  Rl {FFITexture "LoadTextureFromImage" FFIImage}
-  Type!Texture
-)
+LoadTextureFromImage ← Types!Texture Rl {FFITexture "LoadTextureFromImage" FFIImage} {Types!Image}
 
 # Load texture from file into GPU memory
 # ? Path
-LoadTexture ← (
-  {∘}
-  Rl {FFITexture "LoadTexture" "const char*"}
-  Type!Texture
+LoadTexture ← Types!Texture Rl {FFITexture "LoadTexture" "const char*"} {∘}
+
+# Update GPU texture with new data
+# ? Texture Pixels
+UpdateTexture ← ◌Rl {"void" "UpdateTexture" FFITexture "const unsigned char*"} □₂
+
+# ? Texture Rectangle Pixels
+UpdateTextureRec ← (
+  {Types!(Texture|Rectangle|∘)}
+  ◌Rl {"void" "UpdateTextureRec" FFITexture FFIRectangle "const unsigned char*"}
 )
 
 # Unload texture from GPU memory
 # ? Texture
-UnloadTexture ← (
-  {Type!Texture}
-  ◌Rl {"void" "UnloadTexture" FFITexture}
-)
+UnloadTexture ← ◌Rl {"void" "UnloadTexture" FFITexture} {Types!Texture}
 
 # Draw a texture.
 # ? Texture Position TintColor
-DrawTexture ← (
-  {Prepare!(Type!Texture|Type!Vector₂|Type!Color)}
-  ◌Rl {"void" "DrawTextureV" FFITexture FFIVector₂ FFIColor}
-)
+DrawTexture ← ◌Rl {"void" "DrawTextureV" FFITexture FFIVector₂ FFIColor} {Types!(Texture|Vector₂|Color)}
 
 # Draw a texture with extended parameters.
 # ? Texture Position Rotation Scale TintColor
 DrawTextureEx ← (
-  {Prepare!(Type!Texture|Type!Vector₂|∘|∘|Type!Color)}
+  {Types!(Texture|Vector₂|∘|∘|Color)}
   ◌Rl {"void" "DrawTextureEx" FFITexture FFIVector₂ "float" "float" FFIColor}
 )
 
 # Draw a part of a texture.
 # ? Texture SourceRectangle Position TintColor
 DrawTextureRec ← (
-  {Prepare!(Type!Texture|Type!Rectangle|Type!Vector₂|Type!Color)}
+  {Types!(Texture|Rectangle|Vector₂|Color)}
   ◌Rl {"void" "DrawTextureRec" FFITexture FFIRectangle FFIVector₂ FFIColor}
 )
 
 # Draw a part of a texture defined by a rectangle with 'pro' parameters
 # ? Texture SourceRectangle DestinationRectangle Origin Rotation TintColor
 DrawTexturePro ← (
-  {Prepare!(Type!Texture|Type!Rectangle|Type!Rectangle|Type!Vector₂|∘|Type!Color)}
+  {Types!(Texture|Rectangle|Rectangle|Vector₂|∘|Color)}
   ◌Rl {"void" "DrawTexturePro" FFITexture FFIRectangle FFIRectangle FFIVector₂ "float" FFIColor}
 )
 
 # Check collision between two rectangles.
 # Boolean ? Rectangle Rectangle
 CheckCollisionRecs ← (
-  {Prepare!(Type!Rectangle|Type!Rectangle)}
+  {Types!(Rectangle|Rectangle)}
   Rl {"char" "CheckCollisionRecs" FFIRectangle FFIRectangle}
 )
 
 # Check collision between two circles.
 # Boolean ? Center1 Radius1 Center2 Radius2
 CheckCollisionCircles ← (
-  {Prepare!(Type!Vector₂|∘|Type!Vector₂|∘)}
+  {Types!(Vector₂|∘|Vector₂|∘)}
   Rl {"char" "CheckCollisionCircles" FFIVector₂ "float" FFIVector₂ "float"}
 )
 
 # Check collision between circle and rectangle.
 # Boolean ? Center Radius Rectangle
 CheckCollisionCircleRec ← (
-  {Prepare!(Type!Vector₂|∘|Type!Rectangle)}
+  {Types!(Vector₂|∘|Rectangle)}
   Rl {"char" "CheckCollisionCircleRec" FFIVector₂ "float" FFIRectangle}
 )
 
 # Check if circle collides with a line created between two points.
 # Boolean ? Center Radius Point1 Point2
 CheckCollisionCircleLine ← (
-  {Prepare!(Type!Vector₂|∘|Type!Vector₂|Type!Vector₂)}
+  {Types!(Vector₂|∘|Vector₂|Vector₂)}
   Rl {"char" "CheckCollisionCircleLine" FFIVector₂ "float" FFIVector₂ FFIVector₂}
 )
 
 # Check if point is inside rectangle.
 # Boolean ? Point Rectangle
 CheckCollisionPointRec ← (
-  {Prepare!(Type!Vector₂|Type!Rectangle)}
+  {Types!(Vector₂|Rectangle)}
   Rl {"char" "CheckCollisionPointRec" FFIVector₂ FFIRectangle}
 )
 
 # Check if point is inside circle.
 # Boolean ? Point Center Radius
 CheckCollisionPointCircle ← (
-  {Prepare!(Type!Vector₂|Type!Vector₂|∘)}
+  {Types!(Vector₂|Vector₂|∘)}
   Rl {"char" "CheckCollisionPointCircle" FFIVector₂ FFIVector₂ "float"}
 )
 
 # Check if point is inside a triangle.
 # Boolean ? Point Point1 Point2 Point3
 CheckCollisionPointTriangle ← (
-  {Prepare!(Type!Vector₂|Type!Vector₂|Type!Vector₂|Type!Vector₂)}
+  {Types!(Vector₂|Vector₂|Vector₂|Vector₂)}
   Rl {"char" "CheckCollisionPointTriangle" FFIVector₂ FFIVector₂ FFIVector₂ FFIVector₂}
 )
 
 # Check if point belongs to line created between two points.
 # Boolean ? Point Point1 Point2 Threshold
 CheckCollisionPointLine ← (
-  {Prepare!(Type!Vector₂|Type!Vector₂|Type!Vector₂|∘)}
+  {Types!(Vector₂|Vector₂|Vector₂|∘)}
   Rl {"char" "CheckCollisionPointLine" FFIVector₂ FFIVector₂ FFIVector₂ "int"}
 )
 
 # Check if point is within a polygon described by array of vertices.
 # Boolean ? Point Points
 CheckCollisionPointPoly ← (
-  {Prepare!(Type!Vector₂|≡Type!Vector₂)}
+  {Types!(Vector₂|≡Vector₂)}
   Rl {"char" "CheckCollisionPointPoly" FFIVector₂ $"const _:2"FFIVector₂ "int"}
 )
 
 # Check the collision between two lines defined by two points each.
 # Boolean ? StartPos1 EndPos1 StartPos2 EndPos2
 CheckCollisionLines ← (
-  {Prepare!(Type!Vector₂|Type!Vector₂|Type!Vector₂|Type!Vector₂)}
+  {Types!(Vector₂|Vector₂|Vector₂|Vector₂)}
   Rl {"char" "CheckCollisionLines" FFIVector₂ FFIVector₂ FFIVector₂ FFIVector₂}
 )
 
 # Get the intersection of two rectangles.
 # Rectangle ? Rectangle Rectangle
 GetCollisionRec ← (
-  {Prepare!(Type!Rectangle|Type!Rectangle)}
+  {Types!(Rectangle|Rectangle)}
   Rl {FFIRectangle "GetCollisionRec" FFIRectangle FFIRectangle}
-  Type!Rectangle
+  Types!Rectangle
 )
