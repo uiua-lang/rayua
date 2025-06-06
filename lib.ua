@@ -303,6 +303,12 @@ GetMouseDelta ← (Types!Vector₂ (Rl {FFIVector₂ "GetMouseDelta"} {}))
 # ? Vector2
 SetMousePosition ← ◌Rl {"void" "SetMousePosition" "int" "int"} {°⊟⁅}
 
+# Get mouse wheel movement for X or Y, whichever is larger
+GetMouseWheelMove ← (Rl {"float" "GetMouseWheelMove"} {})
+
+# Get mouse wheel movement for both X and Y
+GetMouseWheelMoveV ← (Types!Vector₂ Rl {FFIVector₂ "GetMouseWheelMoveV"} {})
+
 # Shows cursor.
 ShowCursor ← (◌Rl {"void" "ShowCursor"} {})
 
