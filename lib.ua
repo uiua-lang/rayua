@@ -156,12 +156,27 @@ FFIRectangle ↚ "{float; float; float; float}"
   InterlacedHint         ← 65536 # 0x00010000
 └─╴
 
+┌─╴TraceLogLevel
+  All     ← 0
+  Trace   ← 1
+  Debug   ← 2
+  Info    ← 3
+  Warning ← 4
+  Error   ← 5
+  Fatal   ← 6
+  None    ← 7
+└─╴
+
 # Core Module
 
 # Initialize window and OpenGL context.
 # This should be called before any other Raylib functions.
 # ? WindowWidth WindowHeight WindowTitle
 InitWindow ← ◌Rl {"void" "InitWindow" "int" "int" "const char*"} Window
+
+# Set the current threshold (minimum) log level
+# ? LogLevel
+SetTraceLogLevel ← ◌ Rl {"void" "SetTraceLogLevel" "int"} □₁
 
 # Set the target FPS (maximum).
 # ? TargetFPS
@@ -505,6 +520,7 @@ LoadTexture ← Types!Texture Rl {FFITexture "LoadTexture" "const char*"} {∘}
 # ? Texture Pixels
 UpdateTexture ← ◌Rl {"void" "UpdateTexture" FFITexture "const unsigned char*"} □₂
 
+# Update GPU texture rectangle with new data
 # ? Texture Rectangle Pixels
 UpdateTextureRec ← (
   {Types!(Texture|Rectangle|∘)}
