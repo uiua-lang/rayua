@@ -264,6 +264,10 @@ GetRenderWidth ← (Rl {"int" "GetRenderWidth"} {})
 # Height ?
 GetRenderHeight ← (Rl {"int" "GetRenderHeight"} {})
 
+# Get window scale DPI factor
+# DPIScale ?
+GetWindowScaleDPI ← (Types!Vector₂ Rl {FFIVector₂ "GetWindowScaleDPI"} {})
+
 # Get current monitor where window is placed
 # Monitor ?
 GetCurrentMonitor ← (Rl {"int" "GetCurrentMonitor"} {})
