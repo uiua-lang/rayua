@@ -26,14 +26,20 @@ Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 ~Texture {Id Width Height Mipmaps Format}
 ~Vector₂ [X Y]
 ~Rectangle [X Y Width Height]
+~Wave {FrameCount SampleRate SampleSize Channels Data}
+~AudioStream {Buffer Processor SampleRate SampleSize Channels}
+~Sound {AudioStream FrameCount}
 
 # FFI Structs
 
-FFIVector₂   ↚ "{float; float}"
-FFIColor     ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
-FFIImage     ↚ "{const unsigned char*; int; int; int; int;}"
-FFITexture   ↚ "{unsigned int; int; int; int; int}"
-FFIRectangle ↚ "{float; float; float; float}"
+FFIVector₂     ↚ "{float; float}"
+FFIColor       ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
+FFIImage       ↚ "{const unsigned char*; int; int; int; int;}"
+FFITexture     ↚ "{unsigned int; int; int; int; int}"
+FFIRectangle   ↚ "{float; float; float; float}"
+FFIWave        ↚ "{unsigned int; unsigned int; unsigned int; unsigned int; const unsigned char*}"
+FFIAudioStream ↚ "{const void*; const void*; unsigned int; unsigned int; unsigned int;}"
+FFISound       ↚ $"{_; unsigned int}" FFIAudioStream
 
 ┌─╴Color
   ~ [R G B A]
@@ -637,3 +643,71 @@ GetCollisionRec ← (
   Rl {FFIRectangle "GetCollisionRec" FFIRectangle FFIRectangle}
   Types!Rectangle
 )
+
+# Initialize audio device and context
+InitAudioDevice ← (◌Rl {"void" "InitAudioDevice"} {})
+
+# Close the audio device and context
+CloseAudioDevice ← (◌Rl {"void" "CloseAudioDevice"} {})
+
+# Check if audio device has been initialized successfully
+IsAudioDeviceReady ← (Rl {"int" "IsAudioDeviceReady"} {})
+
+# Set master volume (listener)
+SetMasterVolume ← ◌Rl {"void" "SetMasterVolume" "float"} □₁
+
+# Get master volume (listener)
+GetMasterVolume ← (Rl {"float" "SetMasterVolume"} {})
+
+# Load wave data from file
+LoadWave ← Types!Wave Rl {FFIWave "LoadWave" "const char*"} □₁
+
+# Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
+# ? FileType FileData
+LoadWaveFromMemory ← Types!Wave Rl {FFIWave "LoadWaveFromMemory" "const char*" "const unsigned char:2" "int"} □₂
+
+# Checks if wave data is valid (data loaded and parameters)
+IsWaveValid ← Rl {"int" "IsWaveValid" FFIWave} {Types!Wave}
+
+# Load sound from file
+LoadSound ← Types!Sound Rl {FFISound "LoadSound" "const char*"} □₁
+
+# Load sound from wave data 
+LoadSoundFromWave ← Types!Sound Rl {FFISound "LoadSoundFromWave" FFIWave} {Types!Wave}
+
+# Create a new sound that shares the same sample data as the source sound, does not own the sound data
+LoadSoundAlias ← Types!Sound Rl {FFISound "LoadSoundAlias" FFISound} {Types!Sound}
+
+# Checks if a sound is valid (data loaded and buffers initialized)
+IsSoundValid ← Rl {"int" "IsSoundValid" FFISound} {Types!Sound}
+
+# Update sound buffer with new data
+# ? Sound Data SampleCount
+UpdateSound ← ◌ Rl {"void" "UpdateSound" FFISound "const unsigned char*" "int"} {Types!(Sound|∘|∘)}
+
+# Unload wave data
+UnloadWave ← ◌ Rl {"void" "UnloadWave" FFIWave} {Types!Wave}
+
+# Unload sound 
+UnloadSound ← ◌ Rl {"void" "UnloadSound" FFISound} {Types!Sound}
+
+# Unload a sound alias (does not deallocate sample data)
+UnloadSoundAlias ← ◌Rl{"void" "UnloadSoundAlias" FFISound} {Types!Sound}
+
+# Play a sound
+PlaySound ← ◌ Rl {"void" "PlaySound" FFISound} {Types!Sound}
+
+# Stop playing a sound
+StopSound ← ◌ Rl {"void" "StopSound" FFISound} {Types!Sound}
+
+# Pause a sound
+PauseSound ← ◌ Rl {"void" "PauseSound" FFISound} {Types!Sound}
+
+# Resume a paused sound
+ResumeSound ← ◌ Rl {"void" "ResumeSound" FFISound} {Types!Sound}
+
+# Check if a sound is currently playing
+IsSoundPlaying ← Rl {"int" "IsSoundPlaying" FFISound} {Types!Sound}
+
+# Set volume for a sound (1.0 is max level)
+SetSoundVolume ← ◌ Rl {"void" "SetSoundVolume" FFISound "float"} {Types!(Sound|∘)}
