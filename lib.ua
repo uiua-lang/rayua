@@ -26,6 +26,7 @@ Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 ~Texture {Id Width Height Mipmaps Format}
 ~Vector₂ [X Y]
 ~Rectangle [X Y Width Height]
+~Font {BaseSize GlyphCount GlyphPadding Texture Recs Glyphs}
 ~Wave {FrameCount SampleRate SampleSize Channels Data}
 ~AudioStream {Buffer Processor SampleRate SampleSize Channels}
 ~Sound {AudioStream FrameCount}
@@ -37,6 +38,7 @@ FFIColor       ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}
 FFIImage       ↚ "{const unsigned char*; int; int; int; int;}"
 FFITexture     ↚ "{unsigned int; int; int; int; int}"
 FFIRectangle   ↚ "{float; float; float; float}"
+FFIFont        ↚ $"{int; int; int; _; const void*; const void*}" FFITexture
 FFIWave        ↚ "{unsigned int; unsigned int; unsigned int; unsigned int; const unsigned char*}"
 FFIAudioStream ↚ "{const void*; const void*; unsigned int; unsigned int; unsigned int;}"
 FFISound       ↚ $"{_; unsigned int}" FFIAudioStream
@@ -487,13 +489,36 @@ DrawPoly ← ◌Rl {"void" "DrawPoly" FFIVector₂ "int" "float" "float" FFIColo
 # ? Center Sides Radius Rotation Color
 DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" FFIVector₂ "int" "float" "float" FFIColor} {⊙⊙⊙⊙∘}
 
+# Get the default Font
+GetFontDefault ← (Types!Font Rl {FFIFont "GetFontDefault"} {})
+
+# Load font from file into GPU memory (VRAM)
+LoadFont ← Types!Font Rl {FFIFont "LoadFont"} □₁
+
+# Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default character set, font size is provided in pixels height
+LoadFontEx ← Types!Font Rl {FFIFont "LoadFontEx" "const char*" "int" "const int:3" "int"} □₃
+
+# Check if a font is valid (font data loaded, WARNING: GPU texture not checked)
+IsFontValid ← Rl {"int" "IsFontValid" FFIFont} {Types!Font}
+
+# Unload font from GPU memory (VRAM)
+UnloadFont ← ◌ Rl {"void" "UnloadFont" FFIFont} {Types!Font}
+
 # Draw text using default font.
 # ? Text Position Size Color
-DrawText ← ◌Rl {"void" "DrawText" "const char*" "int" "int" "int" FFIColor} {⊓(∘|°⊟⁅|⊙∘)}
+DrawText ← ◌ Rl {"void" "DrawText" "const char*" "int" "int" "int" FFIColor} {⊓(∘|°⊟⁅|⊙∘)}
+
+# Draw text using font and additional parameters
+# ? Font Text Position FontSize Spacing Tint
+DrawTextEx ← ◌ Rl {"void" "DrawTextEx" FFIFont "const char*" FFIVector₂ "float" "float" FFIColor} {Types!(Font|∘|Vector₂|∘|∘|Color)}
 
 # Measure string width for default font.
 # Width ? Text Size
 MeasureText ← Rl {"int" "MeasureText" "const char*" "int"} {⊙∘}
+
+# Measure string size for Font
+# ? Font Text FontSize Spacing
+MeasureTextEx ← Types!Vector₂ Rl {FFIVector₂ "MeasureTextEx" FFIFont "const char*" "float" "float"} {Types!(Font|∘|∘|∘)}
 
 # Draw text using the default font, centered around the given position.
 # ? Text Position Size Color
