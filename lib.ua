@@ -493,9 +493,10 @@ DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" FFIVector₂ "int" "float" "floa
 GetFontDefault ← (Types!Font Rl {FFIFont "GetFontDefault"} {})
 
 # Load font from file into GPU memory (VRAM)
-LoadFont ← Types!Font Rl {FFIFont "LoadFont"} □₁
+LoadFont ← Types!Font Rl {FFIFont "LoadFont" "const char*"} □₁
 
 # Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default character set, font size is provided in pixels height
+# ? FileName FontSize Codepoints
 LoadFontEx ← Types!Font Rl {FFIFont "LoadFontEx" "const char*" "int" "const int:3" "int"} □₃
 
 # Check if a font is valid (font data loaded, WARNING: GPU texture not checked)
