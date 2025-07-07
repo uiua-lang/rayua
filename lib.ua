@@ -350,6 +350,12 @@ IsCursorHidden ← (Rl {"int" "IsCursorHidden"} {})
 # Boolean ?
 IsCursorOnScreen ← (Rl {"int" "IsCursorOnScreen"} {})
 
+# Enables cursor (unlock cursor)
+EnableCursor ← (◌ Rl {"void" "EnableCursor"} {})
+
+# Disables cursor (lock cursor)
+DisableCursor ← (◌ Rl {"void" "DisableCursor"} {})
+
 KeyCode ↚ ⍥(-@\0⌵)⊸type
 
 # Check if a key has been pressed once.
