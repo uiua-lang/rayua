@@ -32,6 +32,8 @@ Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 ~AudioStream {Buffer Processor SampleRate SampleSize Channels}
 ~Sound {AudioStream FrameCount}
 ~CameraThreeD {Position Target Up FovY Projection}
+~Mesh {VertexCount TriangleCount Vertices TexCoords TexCoords₂ Normals Tangents Colors Indices AnimVertices AnimNormals BoneIds BoneWeights BoneMatrices BoneCount VaoId VboId}
+~Model {TransformMatrix MeshCount MaterialCount Meshes Materials MeshMaterial BoneCount Bones BindPose}
 
 # FFI Structs
 
@@ -46,6 +48,9 @@ FFIWave         ↚ "{unsigned int; unsigned int; unsigned int; unsigned int; co
 FFIAudioStream  ↚ "{const void*; const void*; unsigned int; unsigned int; unsigned int}"
 FFISound        ↚ $"{_; unsigned int}" FFIAudioStream
 FFICameraThreeD ↚ ˙$"{_; _; _; float; int}" FFIVector₃
+FFIMesh         ↚ "{int; int; const float*; const void*; const void*; const void*; const void*; const unsigned char*; const unsigned short*; const void*; const void*; const void*; const void*; const void*; int; unsigned int; const void*}"
+FFIMatrix       ↚ $"{_}" ♭↯16 "float;"
+FFIModel        ↚ $"{_; int; int; const void*; const void*; const void*; int; const void*; const void*}" FFIMatrix
 
 ┌─╴Color
   ~ [R G B A]
@@ -575,6 +580,30 @@ DrawCube ← ◌ Rl {"void" "DrawCubeV" FFIVector₃ FFIVector₃ FFIColor} {Typ
 # Draw cube wires
 # ? Position Size Color
 DrawCubeWires ← ◌ Rl {"void" "DrawCubeWiresV" FFIVector₃ FFIVector₃ FFIColor} {Types!(Vector₃|Vector₃|Color)}
+
+# Upload mesh vertex data in GPU and provide VAO/VBO ids
+# Mesh ? Mesh Dynamic
+UploadMesh ← Types!(Mesh) Rl {"void" "UploadMesh" ˜⊂@*FFIMesh "unsigned char"} {Types!(Mesh|∘)}
+
+# TODO:
+# bool IsModelValid(Model model);                                                       // Check if a model is valid (loaded in GPU, VAO/VBOs)
+# void UnloadModel(Model model);                                                        // Unload model (including meshes) from memory (RAM and/or VRAM)
+
+# Load model from files (meshes and materials)
+# Model ? FileName
+LoadModel ← Types!(Model) Rl {FFIModel "LoadModel" "const char*"} □₁
+
+# Load model from generated mesh (default material)
+# Model ? Mesh
+LoadModelFromMesh ← Types!(Model) Rl {FFIModel "LoadModelFromMesh" FFIMesh} {Types!(Mesh)}
+
+# Draw a model (with texture if set)
+# ? Model Position Scale Color
+DrawModel ← ◌ Rl {"void" "DrawModel" FFIModel FFIVector₃ "float" FFIColor} {Types!(Model|Vector₃|∘|Color)}
+
+# Draw a model with extended parameters
+# ? Model Position RotationAxis RotationAngle Scale Tint
+DrawModelEx ← ◌ Rl {"void" "DrawModel" FFIModel FFIVector₃ FFIVector₃ "float" FFIVector₃ FFIColor} {Types!(Model|Vector₃|Vector₃|∘|Vector₃|Color)}
 
 # Generate image: plain color
 # ? Width Height Color
