@@ -24,24 +24,33 @@ Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 ~Window {Width Height Title}
 ~Image {Data Width Height Mipmaps Format}
 ~Texture {Id Width Height Mipmaps Format}
+~Vector₃ [X Y Z]
 ~Vector₂ [X Y]
 ~Rectangle [X Y Width Height]
 ~Font {BaseSize GlyphCount GlyphPadding Texture Recs Glyphs}
 ~Wave {FrameCount SampleRate SampleSize Channels Data}
 ~AudioStream {Buffer Processor SampleRate SampleSize Channels}
 ~Sound {AudioStream FrameCount}
+~CameraThreeD {Position Target Up FovY Projection}
+~Mesh {VertexCount TriangleCount Vertices TexCoords TexCoords₂ Normals Tangents Colors Indices AnimVertices AnimNormals BoneIds BoneWeights BoneMatrices BoneCount VaoId VboId}
+~Model {TransformMatrix MeshCount MaterialCount Meshes Materials MeshMaterial BoneCount Bones BindPose}
 
 # FFI Structs
 
-FFIVector₂     ↚ "{float; float}"
-FFIColor       ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
-FFIImage       ↚ "{const unsigned char*; int; int; int; int;}"
-FFITexture     ↚ "{unsigned int; int; int; int; int}"
-FFIRectangle   ↚ "{float; float; float; float}"
-FFIFont        ↚ $"{int; int; int; _; const void*; const void*}" FFITexture
-FFIWave        ↚ "{unsigned int; unsigned int; unsigned int; unsigned int; const unsigned char*}"
-FFIAudioStream ↚ "{const void*; const void*; unsigned int; unsigned int; unsigned int;}"
-FFISound       ↚ $"{_; unsigned int}" FFIAudioStream
+FFIVector₃      ↚ ˙$"{_; _; _}" "float"
+FFIVector₂      ↚ ˙$"{_; _}" "float"
+FFIColor        ↚ ˙$"{_; _; _; _}" "unsigned char"
+FFIImage        ↚ "{const unsigned char*; int; int; int; int}"
+FFITexture      ↚ "{unsigned int; int; int; int; int}"
+FFIRectangle    ↚ ˙$"{_; _; _; _}" "float"
+FFIFont         ↚ $"{int; int; int; _; const void*; const void*}" FFITexture
+FFIWave         ↚ "{unsigned int; unsigned int; unsigned int; unsigned int; const unsigned char*}"
+FFIAudioStream  ↚ "{const void*; const void*; unsigned int; unsigned int; unsigned int}"
+FFISound        ↚ $"{_; unsigned int}" FFIAudioStream
+FFICameraThreeD ↚ ˙$"{_; _; _; float; int}" FFIVector₃
+FFIMesh         ↚ "{int; int; const float*; const void*; const void*; const void*; const void*; const unsigned char*; const unsigned short*; const void*; const void*; const void*; const void*; const void*; int; unsigned int; const void*}"
+FFIMatrix       ↚ $"{_}" ♭↯16 "float;"
+FFIModel        ↚ $"{_; int; int; const void*; const void*; const void*; int; const void*; const void*}" FFIMatrix
 
 ┌─╴Color
   ~ [R G B A]
@@ -175,6 +184,19 @@ FFISound       ↚ $"{_; unsigned int}" FFIAudioStream
   None    ← 7
 └─╴
 
+┌─╴CameraMode
+  Custom      ← 0
+  Free        ← 1
+  Orbital     ← 2
+  FirstPerson ← 3
+  ThirdPerson ← 4
+└─╴
+
+┌─╴CameraProjection
+  Perspective  ← 0
+  Orthographic ← 1
+└─╴
+
 # Core Module
 
 # Initialize window and OpenGL context.
@@ -302,6 +324,24 @@ BeginDrawing ← (◌Rl {"void" "BeginDrawing"} {})
 # End canvas drawing and swap buffers (double buffering).
 EndDrawing ← (◌Rl {"void" "EndDrawing"} {})
 
+# Begin 3D mode with custom camera (3D)
+# ? Camera
+BeginModeThreeD ← ◌ Rl {"void" "BeginMode3D" FFICameraThreeD} {Types!(CameraThreeD)}
+
+# Ends 3D mode and returns to default 2D orthographic mode
+EndModeThreeD ← (◌ Rl {"void" "EndMode3D"} {})
+
+# Update camera position for selected mode
+# Camera ? Camera Mode
+UpdateCamera ← Types!(CameraThreeD) Rl {"void" "UpdateCamera" ˜⊂@*FFICameraThreeD "int"} {Types!(CameraThreeD|∘)}
+
+# Update camera movement/rotation
+# Camera ? Camera Movement Rotation Zoom
+UpdateCameraPro ← (
+  {Types!(CameraThreeD|Vector₃|Vector₃|∘)}
+  Types!(CameraThreeD) Rl {"void" "UpdateCameraPro" ˜⊂@*FFICameraThreeD FFIVector₃ FFIVector₃ "float"}
+)
+
 # Check if a mouse button has been pressed once.
 # Boolean ? MouseButton
 IsMouseButtonPressed ← Rl {"char" "IsMouseButtonPressed" "int"} {∘}
@@ -349,6 +389,12 @@ IsCursorHidden ← (Rl {"int" "IsCursorHidden"} {})
 # Check if cursor is on the screen
 # Boolean ?
 IsCursorOnScreen ← (Rl {"int" "IsCursorOnScreen"} {})
+
+# Enables cursor (unlock cursor)
+EnableCursor ← (◌ Rl {"void" "EnableCursor"} {})
+
+# Disables cursor (lock cursor)
+DisableCursor ← (◌ Rl {"void" "DisableCursor"} {})
 
 KeyCode ↚ ⍥(-@\0⌵)⊸type
 
@@ -524,6 +570,40 @@ MeasureTextEx ← Types!Vector₂ Rl {FFIVector₂ "MeasureTextEx" FFIFont "cons
 # Draw text using the default font, centered around the given position.
 # ? Text Position Size Color
 DrawTextCentered ← DrawText :-⊙:÷2⊟ ◡⊃(MeasureText ⊙⋅∘|⋅⋅∘)
+
+# Models
+
+# Draw cube
+# ? Position Size Color
+DrawCube ← ◌ Rl {"void" "DrawCubeV" FFIVector₃ FFIVector₃ FFIColor} {Types!(Vector₃|Vector₃|Color)}
+
+# Draw cube wires
+# ? Position Size Color
+DrawCubeWires ← ◌ Rl {"void" "DrawCubeWiresV" FFIVector₃ FFIVector₃ FFIColor} {Types!(Vector₃|Vector₃|Color)}
+
+# Upload mesh vertex data in GPU and provide VAO/VBO ids
+# Mesh ? Mesh Dynamic
+UploadMesh ← Types!(Mesh) Rl {"void" "UploadMesh" ˜⊂@*FFIMesh "unsigned char"} {Types!(Mesh|∘)}
+
+# TODO:
+# bool IsModelValid(Model model);                                                       // Check if a model is valid (loaded in GPU, VAO/VBOs)
+# void UnloadModel(Model model);                                                        // Unload model (including meshes) from memory (RAM and/or VRAM)
+
+# Load model from files (meshes and materials)
+# Model ? FileName
+LoadModel ← Types!(Model) Rl {FFIModel "LoadModel" "const char*"} □₁
+
+# Load model from generated mesh (default material)
+# Model ? Mesh
+LoadModelFromMesh ← Types!(Model) Rl {FFIModel "LoadModelFromMesh" FFIMesh} {Types!(Mesh)}
+
+# Draw a model (with texture if set)
+# ? Model Position Scale Color
+DrawModel ← ◌ Rl {"void" "DrawModel" FFIModel FFIVector₃ "float" FFIColor} {Types!(Model|Vector₃|∘|Color)}
+
+# Draw a model with extended parameters
+# ? Model Position RotationAxis RotationAngle Scale Tint
+DrawModelEx ← ◌ Rl {"void" "DrawModel" FFIModel FFIVector₃ FFIVector₃ "float" FFIVector₃ FFIColor} {Types!(Model|Vector₃|Vector₃|∘|Vector₃|Color)}
 
 # Generate image: plain color
 # ? Width Height Color
