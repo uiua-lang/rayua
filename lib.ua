@@ -24,24 +24,28 @@ Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 ~Window {Width Height Title}
 ~Image {Data Width Height Mipmaps Format}
 ~Texture {Id Width Height Mipmaps Format}
+~Vector₃ [X Y Z]
 ~Vector₂ [X Y]
 ~Rectangle [X Y Width Height]
 ~Font {BaseSize GlyphCount GlyphPadding Texture Recs Glyphs}
 ~Wave {FrameCount SampleRate SampleSize Channels Data}
 ~AudioStream {Buffer Processor SampleRate SampleSize Channels}
 ~Sound {AudioStream FrameCount}
+~CameraThreeD {Position Target Up FovY Projection}
 
 # FFI Structs
 
-FFIVector₂     ↚ "{float; float}"
-FFIColor       ↚ "{unsigned char; unsigned char; unsigned char; unsigned char}"
-FFIImage       ↚ "{const unsigned char*; int; int; int; int;}"
-FFITexture     ↚ "{unsigned int; int; int; int; int}"
-FFIRectangle   ↚ "{float; float; float; float}"
-FFIFont        ↚ $"{int; int; int; _; const void*; const void*}" FFITexture
-FFIWave        ↚ "{unsigned int; unsigned int; unsigned int; unsigned int; const unsigned char*}"
-FFIAudioStream ↚ "{const void*; const void*; unsigned int; unsigned int; unsigned int;}"
-FFISound       ↚ $"{_; unsigned int}" FFIAudioStream
+FFIVector₃      ↚ ˙$"{_; _; _}" "float"
+FFIVector₂      ↚ ˙$"{_; _}" "float"
+FFIColor        ↚ ˙$"{_; _; _; _}" "unsigned char"
+FFIImage        ↚ "{const unsigned char*; int; int; int; int}"
+FFITexture      ↚ "{unsigned int; int; int; int; int}"
+FFIRectangle    ↚ ˙$"{_; _; _; _}" "float"
+FFIFont         ↚ $"{int; int; int; _; const void*; const void*}" FFITexture
+FFIWave         ↚ "{unsigned int; unsigned int; unsigned int; unsigned int; const unsigned char*}"
+FFIAudioStream  ↚ "{const void*; const void*; unsigned int; unsigned int; unsigned int}"
+FFISound        ↚ $"{_; unsigned int}" FFIAudioStream
+FFICameraThreeD ↚ ˙$"{_; _; _; float; int}" FFIVector₃
 
 ┌─╴Color
   ~ [R G B A]
@@ -175,6 +179,19 @@ FFISound       ↚ $"{_; unsigned int}" FFIAudioStream
   None    ← 7
 └─╴
 
+┌─╴CameraMode
+  Custom      ← 0
+  Free        ← 1
+  Orbital     ← 2
+  FirstPerson ← 3
+  ThirdPerson ← 4
+└─╴
+
+┌─╴CameraProjection
+  Perspective  ← 0
+  Orthographic ← 1
+└─╴
+
 # Core Module
 
 # Initialize window and OpenGL context.
@@ -301,6 +318,24 @@ BeginDrawing ← (◌Rl {"void" "BeginDrawing"} {})
 
 # End canvas drawing and swap buffers (double buffering).
 EndDrawing ← (◌Rl {"void" "EndDrawing"} {})
+
+# Begin 3D mode with custom camera (3D)
+# ? Camera
+BeginModeThreeD ← ◌ Rl {"void" "BeginMode3D" FFICameraThreeD} {Types!(CameraThreeD)}
+
+# Ends 3D mode and returns to default 2D orthographic mode
+EndModeThreeD ← (◌ Rl {"void" "EndMode3D"} {})
+
+# Update camera position for selected mode
+# Camera ? Camera Mode
+UpdateCamera ← Types!(CameraThreeD) Rl {"void" "UpdateCamera" ˜⊂@*FFICameraThreeD "int"} {Types!(CameraThreeD|∘)}
+
+# Update camera movement/rotation
+# Camera ? Camera Movement Rotation Zoom
+UpdateCameraPro ← (
+  {Types!(CameraThreeD|Vector₃|Vector₃|∘)}
+  Types!(CameraThreeD) Rl {"void" "UpdateCameraPro" ˜⊂@*FFICameraThreeD FFIVector₃ FFIVector₃ "float"}
+)
 
 # Check if a mouse button has been pressed once.
 # Boolean ? MouseButton
@@ -530,6 +565,16 @@ MeasureTextEx ← Types!Vector₂ Rl {FFIVector₂ "MeasureTextEx" FFIFont "cons
 # Draw text using the default font, centered around the given position.
 # ? Text Position Size Color
 DrawTextCentered ← DrawText :-⊙:÷2⊟ ◡⊃(MeasureText ⊙⋅∘|⋅⋅∘)
+
+# Models
+
+# Draw cube
+# ? Position Size Color
+DrawCube ← ◌ Rl {"void" "DrawCubeV" FFIVector₃ FFIVector₃ FFIColor} {Types!(Vector₃|Vector₃|Color)}
+
+# Draw cube wires
+# ? Position Size Color
+DrawCubeWires ← ◌ Rl {"void" "DrawCubeWiresV" FFIVector₃ FFIVector₃ FFIColor} {Types!(Vector₃|Vector₃|Color)}
 
 # Generate image: plain color
 # ? Width Height Color
