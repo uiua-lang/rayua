@@ -36,24 +36,33 @@ Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 # ~Mesh {VertexCount TriangleCount Vertices TexCoords TexCoords₂ Normals Tangents Colors Indices AnimVertices AnimNormals BoneIds BoneWeights BoneMatrices BoneCount VaoId VboId}
 Mesh ← □₁₇
 # ~Model {TransformMatrix MeshCount MaterialCount Meshes Materials MeshMaterial BoneCount Bones BindPose}
-Model ← □₉
+┌─╴Model
+  New       ← □₉
+  Materials ← °□⊡4
+└─╴
+~Shader {Id Locs}
+~MaterialMap {Texture Color Value}
+~Material {Shader Maps Params}
 
 # FFI Structs
 
-FFIVector₃      ↚ ˙$"{_; _; _}" "float"
-FFIVector₂      ↚ ˙$"{_; _}" "float"
-FFIColor        ↚ ˙$"{_; _; _; _}" "unsigned char"
-FFIImage        ↚ "{const unsigned char*; int; int; int; int}"
-FFITexture      ↚ "{unsigned int; int; int; int; int}"
-FFIRectangle    ↚ ˙$"{_; _; _; _}" "float"
-FFIFont         ↚ $"{int; int; int; _; const void*; const void*}" FFITexture
-FFIWave         ↚ "{unsigned int; unsigned int; unsigned int; unsigned int; const unsigned char*}"
-FFIAudioStream  ↚ "{const void*; const void*; unsigned int; unsigned int; unsigned int}"
-FFISound        ↚ $"{_; unsigned int}" FFIAudioStream
-FFICameraThreeD ↚ ˙$"{_; _; _; float; int}" FFIVector₃
-FFIMesh         ↚ "{int; int; const float*; const void*; const void*; const void*; const void*; const unsigned char*; const unsigned short*; const void*; const void*; const void*; const void*; const void*; int; unsigned int; const void*}"
-FFIMatrix       ↚ $"{_}" ♭↯16 "float;"
-FFIModel        ↚ $"{_; int; int; const void*; const void*; const void*; int; const void*; const void*}" FFIMatrix
+FFIVector₃      ← "float[3]"
+FFIVector₂      ← "float[2]"
+FFIColor        ← "uchar[4]"
+FFIImage        ← "{uchar*; int; int; int; int}"
+FFITexture      ← "{uint; int; int; int; int}"
+FFIRectangle    ← "float[4]"
+FFIFont         ← $"{int; int; int; _; void*; void*}" FFITexture
+FFIWave         ← "{uint; uint; uint; uint; uchar*}"
+FFIAudioStream  ← "{void*; void*; uint; uint; uint}"
+FFISound        ← $"{_; uint}" FFIAudioStream
+FFICameraThreeD ← ˙$"{_; _; _; float; int}" FFIVector₃
+FFIMesh         ← "{int; int; float*; float*; float*; float*; float*; uchar*; ushort*; void*; void*; void*; void*; void*; int; uint; void*}"
+FFIMatrix       ← "float[16]"
+FFIShader       ← "{uint; int*}"
+FFIMaterialMap  ← $"{_; _; float}" FFITexture FFIColor
+FFIMaterial     ← $"{_; _*; float[4]}" FFIShader FFIMaterialMap
+FFIModel        ← $"{_; int; int; _*; _*; int*; int; void*; void*}" FFIMatrix FFIMesh FFIMaterial
 
 ┌─╴Color
   ~ [R G B A]
@@ -205,7 +214,7 @@ FFIModel        ↚ $"{_; int; int; const void*; const void*; const void*; int; 
 # Initialize window and OpenGL context.
 # This should be called before any other Raylib functions.
 # ? WindowWidth WindowHeight WindowTitle
-InitWindow ← ◌Rl {"void" "InitWindow" "int" "int" "const char*"} Window
+InitWindow ← ◌Rl {"void" "InitWindow" "int" "int" "char*"} Window
 
 # Set the current threshold (minimum) log level
 # ? LogLevel
@@ -233,47 +242,47 @@ WindowShouldClose ← (Rl {"int" "WindowShouldClose"} {})
 
 # Check if window has been initialized successfully
 # Boolean ?
-IsWindowReady ← (Rl {"int" "IsWindowReady"} {})
+IsWindowReady ← (Rl {"bool" "IsWindowReady"} {})
 
 # Check if window is currently fullscreen
 # Boolean ?
-IsWindowFullscreen ← (Rl {"int" "IsWindowFullscreen"} {})
+IsWindowFullscreen ← (Rl {"bool" "IsWindowFullscreen"} {})
 
 # Check if window is currently hidden
 # Boolean ?
-IsWindowHidden ← (Rl {"int" "IsWindowHidden"} {})
+IsWindowHidden ← (Rl {"bool" "IsWindowHidden"} {})
 
 # Check if window is currently minimized
 # Boolean ?
-IsWindowMinimized ← (Rl {"int" "IsWindowMinimized"} {})
+IsWindowMinimized ← (Rl {"bool" "IsWindowMinimized"} {})
 
 # Check if window is currently maximized
 # Boolean ?
-IsWindowMaximized ← (Rl {"int" "IsWindowMaximized"} {})
+IsWindowMaximized ← (Rl {"bool" "IsWindowMaximized"} {})
 
 # Check if window is currently focused
 # Boolean ?
-IsWindowFocused ← (Rl {"int" "IsWindowFocused"} {})
+IsWindowFocused ← (Rl {"bool" "IsWindowFocused"} {})
 
 # Check if window has been resized last frame
 # Boolean ?
-IsWindowResized ← (Rl {"int" "IsWindowResized"} {})
+IsWindowResized ← (Rl {"bool" "IsWindowResized"} {})
 
 # Check if one specific window flag is enabled
 # Boolean ? Flag
-IsWindowState ← (Rl {"int" "IsWindowState" "unsigned int"} {∘})
+IsWindowState ← (Rl {"bool" "IsWindowState" "uint"} {∘})
 
 # Set window configuration state using flags
 # ? Flags
-SetWindowState ← (◌Rl {"void" "SetWindowState" "unsigned int"} {∘})
+SetWindowState ← (◌Rl {"void" "SetWindowState" "uint"} {∘})
 
 # Clear window configuration state flags
 # ? Flags
-ClearWindowState ← (◌Rl {"void" "ClearWindowState" "Unsigned int"} {∘})
+ClearWindowState ← (◌Rl {"void" "ClearWindowState" "uint"} {∘})
 
 # Setup init configuration flags (view ConfigFlags)
 # ? Flags
-SetConfigFlags ← (◌Rl {"void" "SetConfigFlags" "unsigned int"} {∘})
+SetConfigFlags ← (◌Rl {"void" "SetConfigFlags" "uint"} {∘})
 
 # Toggle window state: fullscreen/windowed, resizes monitor to match window resolution
 ToggleFullscreen ← (◌ Rl {"void" "ToggleFullscreen"} {})
@@ -347,19 +356,19 @@ UpdateCameraPro ← (
 
 # Check if a mouse button has been pressed once.
 # Boolean ? MouseButton
-IsMouseButtonPressed ← Rl {"char" "IsMouseButtonPressed" "int"} {∘}
+IsMouseButtonPressed ← Rl {"bool" "IsMouseButtonPressed" "int"} {∘}
 
 # Check if a mouse button is being pressed.
 # Boolean ? MouseButton
-IsMouseButtonDown ← Rl {"char" "IsMouseButtonDown" "int"} {∘}
+IsMouseButtonDown ← Rl {"bool" "IsMouseButtonDown" "int"} {∘}
 
 # Check if a mouse button has been released once.
 # Boolean ? MouseButton
-IsMouseButtonReleased ← Rl {"char" "IsMouseButtonReleased" "int"} {∘}
+IsMouseButtonReleased ← Rl {"bool" "IsMouseButtonReleased" "int"} {∘}
 
 # Check if a mouse button is NOT being pressed.
 # Boolean ? MouseButton
-IsMouseButtonUp ← Rl {"char" "IsMouseButtonUp" "int"} {∘}
+IsMouseButtonUp ← Rl {"bool" "IsMouseButtonUp" "int"} {∘}
 
 # Get the current mouse position.
 # Vector2 ?
@@ -387,11 +396,11 @@ HideCursor ← (◌Rl {"void" "HideCursor"} {})
 
 # Check if cursor is not visible
 # Boolean ?
-IsCursorHidden ← (Rl {"int" "IsCursorHidden"} {})
+IsCursorHidden ← (Rl {"bool" "IsCursorHidden"} {})
 
 # Check if cursor is on the screen
 # Boolean ?
-IsCursorOnScreen ← (Rl {"int" "IsCursorOnScreen"} {})
+IsCursorOnScreen ← (Rl {"bool" "IsCursorOnScreen"} {})
 
 # Enables cursor (unlock cursor)
 EnableCursor ← (◌ Rl {"void" "EnableCursor"} {})
@@ -403,23 +412,23 @@ KeyCode ↚ ⍥(-@\0⌵)⊸type
 
 # Check if a key has been pressed once.
 # Boolean ? Char
-IsKeyPressed ← Rl {"char" "IsKeyPressed" "int"} {KeyCode}
+IsKeyPressed ← Rl {"bool" "IsKeyPressed" "int"} {KeyCode}
 
 # Check if a key has been pressed again.
 # Boolean ? Char
-IsKeyPressedRepeat ← Rl {"char" "IsKeyPressedRepeat" "int"} {KeyCode}
+IsKeyPressedRepeat ← Rl {"bool" "IsKeyPressedRepeat" "int"} {KeyCode}
 
 # Check if a key is being pressed.
 # Boolean ? Char
-IsKeyDown ← Rl {"char" "IsKeyDown" "int"} {KeyCode}
+IsKeyDown ← Rl {"bool" "IsKeyDown" "int"} {KeyCode}
 
 # Check if a key has been released once.
 # Boolean ? Char
-IsKeyReleased ← Rl {"char" "IsKeyReleased" "int"} {KeyCode}
+IsKeyReleased ← Rl {"bool" "IsKeyReleased" "int"} {KeyCode}
 
 # Check if a key is NOT being pressed.
 # Boolean ? Char
-IsKeyUp ← Rl {"char" "IsKeyUp" "int"} {KeyCode}
+IsKeyUp ← Rl {"bool" "IsKeyUp" "int"} {KeyCode}
 
 # Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty.
 # Int ?
@@ -460,7 +469,7 @@ DrawLineEx ← (
 # ? Vectors Color
 DrawLineStrip ← (
   {Types!(≡Vector₂|Color)}
-  ◌Rl {"void" "DrawLineStrip" $"const _:1"FFIVector₂ "int" FFIColor}
+  ◌Rl {"void" "DrawLineStrip" $"_:1"FFIVector₂ "int" FFIColor}
 )
 
 # Draw line segment cubic-bezier in-out interpolation.
@@ -542,33 +551,33 @@ DrawPolyLines ← ◌Rl {"void" "DrawPolyLines" FFIVector₂ "int" "float" "floa
 GetFontDefault ← (Types!Font Rl {FFIFont "GetFontDefault"} {})
 
 # Load font from file into GPU memory (VRAM)
-LoadFont ← Types!Font Rl {FFIFont "LoadFont" "const char*"} □₁
+LoadFont ← Types!Font Rl {FFIFont "LoadFont" "char*"} □₁
 
 # Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default character set, font size is provided in pixels height
 # ? FileName FontSize Codepoints
-LoadFontEx ← Types!Font Rl {FFIFont "LoadFontEx" "const char*" "int" "const int:3" "int"} □₃
+LoadFontEx ← Types!Font Rl {FFIFont "LoadFontEx" "char*" "int" "int:3" "int"} □₃
 
 # Check if a font is valid (font data loaded, WARNING: GPU texture not checked)
-IsFontValid ← Rl {"int" "IsFontValid" FFIFont} {Types!Font}
+IsFontValid ← Rl {"bool" "IsFontValid" FFIFont} {Types!Font}
 
 # Unload font from GPU memory (VRAM)
 UnloadFont ← ◌ Rl {"void" "UnloadFont" FFIFont} {Types!Font}
 
 # Draw text using default font.
 # ? Text Position Size Color
-DrawText ← ◌ Rl {"void" "DrawText" "const char*" "int" "int" "int" FFIColor} {⊓(∘|°⊟⁅|⊙∘)}
+DrawText ← ◌ Rl {"void" "DrawText" "char*" "int" "int" "int" FFIColor} {⊓(∘|°⊟⁅|⊙∘)}
 
 # Draw text using font and additional parameters
 # ? Font Text Position FontSize Spacing Tint
-DrawTextEx ← ◌ Rl {"void" "DrawTextEx" FFIFont "const char*" FFIVector₂ "float" "float" FFIColor} {Types!(Font|∘|Vector₂|∘|∘|Color)}
+DrawTextEx ← ◌ Rl {"void" "DrawTextEx" FFIFont "char*" FFIVector₂ "float" "float" FFIColor} {Types!(Font|∘|Vector₂|∘|∘|Color)}
 
 # Measure string width for default font.
 # Width ? Text Size
-MeasureText ← Rl {"int" "MeasureText" "const char*" "int"} {⊙∘}
+MeasureText ← Rl {"int" "MeasureText" "char*" "int"} {⊙∘}
 
 # Measure string size for Font
 # ? Font Text FontSize Spacing
-MeasureTextEx ← Types!Vector₂ Rl {FFIVector₂ "MeasureTextEx" FFIFont "const char*" "float" "float"} {Types!(Font|∘|∘|∘)}
+MeasureTextEx ← Types!Vector₂ Rl {FFIVector₂ "MeasureTextEx" FFIFont "char*" "float" "float"} {Types!(Font|∘|∘|∘)}
 
 # Draw text using the default font, centered around the given position.
 # ? Text Position Size Color
@@ -586,7 +595,23 @@ DrawCubeWires ← ◌ Rl {"void" "DrawCubeWiresV" FFIVector₃ FFIVector₃ FFIC
 
 # Upload mesh vertex data in GPU and provide VAO/VBO ids
 # Mesh ? Mesh Dynamic
-UploadMesh ← Types!(Mesh) Rl {"void" "UploadMesh" ˜⊂@*FFIMesh "unsigned char"} {Types!(Mesh|∘)}
+UploadMesh ← Types!(Mesh) Rl {"void" "UploadMesh" $"out _"FFIMesh "uchar"} {Types!(Mesh|∘)}
+
+# Generate polygonal mesh
+# Mesh ? Sides Radius
+GenMeshPoly ← Types!(Mesh) Rl {FFIMesh "GenMeshPoly" "int" "float"} □₂
+
+# Generate plane mesh (with subdivisions)
+# Mesh ? Width Length ResX ResZ
+GenMeshPlane ← Types!(Mesh) Rl {FFIMesh "GenMeshPlane" "float" "float" "int" "int"} □₄
+
+# Generate cuboid mesh
+# Mesh ? Width Height Length
+GenMeshCube ← Types!(Mesh) Rl {FFIMesh "GenMeshCube" "float" "float" "float"} □₃
+
+# Generate sphere mesh (standard sphere)
+# Mesh ? Radius Rings Slices
+GenMeshSphere ← Types!(Mesh) Rl {FFIMesh "GenMeshSphere" "float" "int" "int"} □₃
 
 # TODO:
 # bool IsModelValid(Model model);                                                       // Check if a model is valid (loaded in GPU, VAO/VBOs)
@@ -594,7 +619,7 @@ UploadMesh ← Types!(Mesh) Rl {"void" "UploadMesh" ˜⊂@*FFIMesh "unsigned cha
 
 # Load model from files (meshes and materials)
 # Model ? FileName
-LoadModel ← Types!(Model) Rl {FFIModel "LoadModel" "const char*"} □₁
+LoadModel ← Types!(Model) Rl {FFIModel "LoadModel" "char*"} □₁
 
 # Load model from generated mesh (default material)
 # Model ? Mesh
@@ -633,17 +658,17 @@ LoadTextureFromImage ← Types!Texture Rl {FFITexture "LoadTextureFromImage" FFI
 
 # Load texture from file into GPU memory
 # ? Path
-LoadTexture ← Types!Texture Rl {FFITexture "LoadTexture" "const char*"} {∘}
+LoadTexture ← Types!Texture Rl {FFITexture "LoadTexture" "char*"} {∘}
 
 # Update GPU texture with new data
 # ? Texture Pixels
-UpdateTexture ← ◌Rl {"void" "UpdateTexture" FFITexture "const unsigned char*"} □₂
+UpdateTexture ← ◌Rl {"void" "UpdateTexture" FFITexture "uchar*"} □₂
 
 # Update GPU texture rectangle with new data
 # ? Texture Rectangle Pixels
 UpdateTextureRec ← (
   {Types!(Texture|Rectangle|∘)}
-  ◌Rl {"void" "UpdateTextureRec" FFITexture FFIRectangle "const unsigned char*"}
+  ◌Rl {"void" "UpdateTextureRec" FFITexture FFIRectangle "uchar*"}
 )
 
 # Unload texture from GPU memory
@@ -679,70 +704,70 @@ DrawTexturePro ← (
 # Boolean ? Rectangle Rectangle
 CheckCollisionRecs ← (
   {Types!(Rectangle|Rectangle)}
-  Rl {"char" "CheckCollisionRecs" FFIRectangle FFIRectangle}
+  Rl {"uchar" "CheckCollisionRecs" FFIRectangle FFIRectangle}
 )
 
 # Check collision between two circles.
 # Boolean ? Center1 Radius1 Center2 Radius2
 CheckCollisionCircles ← (
   {Types!(Vector₂|∘|Vector₂|∘)}
-  Rl {"char" "CheckCollisionCircles" FFIVector₂ "float" FFIVector₂ "float"}
+  Rl {"uchar" "CheckCollisionCircles" FFIVector₂ "float" FFIVector₂ "float"}
 )
 
 # Check collision between circle and rectangle.
 # Boolean ? Center Radius Rectangle
 CheckCollisionCircleRec ← (
   {Types!(Vector₂|∘|Rectangle)}
-  Rl {"char" "CheckCollisionCircleRec" FFIVector₂ "float" FFIRectangle}
+  Rl {"uchar" "CheckCollisionCircleRec" FFIVector₂ "float" FFIRectangle}
 )
 
 # Check if circle collides with a line created between two points.
 # Boolean ? Center Radius Point1 Point2
 CheckCollisionCircleLine ← (
   {Types!(Vector₂|∘|Vector₂|Vector₂)}
-  Rl {"char" "CheckCollisionCircleLine" FFIVector₂ "float" FFIVector₂ FFIVector₂}
+  Rl {"uchar" "CheckCollisionCircleLine" FFIVector₂ "float" FFIVector₂ FFIVector₂}
 )
 
 # Check if point is inside rectangle.
 # Boolean ? Point Rectangle
 CheckCollisionPointRec ← (
   {Types!(Vector₂|Rectangle)}
-  Rl {"char" "CheckCollisionPointRec" FFIVector₂ FFIRectangle}
+  Rl {"uchar" "CheckCollisionPointRec" FFIVector₂ FFIRectangle}
 )
 
 # Check if point is inside circle.
 # Boolean ? Point Center Radius
 CheckCollisionPointCircle ← (
   {Types!(Vector₂|Vector₂|∘)}
-  Rl {"char" "CheckCollisionPointCircle" FFIVector₂ FFIVector₂ "float"}
+  Rl {"uchar" "CheckCollisionPointCircle" FFIVector₂ FFIVector₂ "float"}
 )
 
 # Check if point is inside a triangle.
 # Boolean ? Point Point1 Point2 Point3
 CheckCollisionPointTriangle ← (
   {Types!(Vector₂|Vector₂|Vector₂|Vector₂)}
-  Rl {"char" "CheckCollisionPointTriangle" FFIVector₂ FFIVector₂ FFIVector₂ FFIVector₂}
+  Rl {"uchar" "CheckCollisionPointTriangle" FFIVector₂ FFIVector₂ FFIVector₂ FFIVector₂}
 )
 
 # Check if point belongs to line created between two points.
 # Boolean ? Point Point1 Point2 Threshold
 CheckCollisionPointLine ← (
   {Types!(Vector₂|Vector₂|Vector₂|∘)}
-  Rl {"char" "CheckCollisionPointLine" FFIVector₂ FFIVector₂ FFIVector₂ "int"}
+  Rl {"uchar" "CheckCollisionPointLine" FFIVector₂ FFIVector₂ FFIVector₂ "int"}
 )
 
 # Check if point is within a polygon described by array of vertices.
 # Boolean ? Point Points
 CheckCollisionPointPoly ← (
   {Types!(Vector₂|≡Vector₂)}
-  Rl {"char" "CheckCollisionPointPoly" FFIVector₂ $"const _:2"FFIVector₂ "int"}
+  Rl {"uchar" "CheckCollisionPointPoly" FFIVector₂ $"_:2"FFIVector₂ "int"}
 )
 
 # Check the collision between two lines defined by two points each.
 # Boolean ? StartPos1 EndPos1 StartPos2 EndPos2
 CheckCollisionLines ← (
   {Types!(Vector₂|Vector₂|Vector₂|Vector₂)}
-  Rl {"char" "CheckCollisionLines" FFIVector₂ FFIVector₂ FFIVector₂ FFIVector₂}
+  Rl {"uchar" "CheckCollisionLines" FFIVector₂ FFIVector₂ FFIVector₂ FFIVector₂}
 )
 
 # Get the intersection of two rectangles.
@@ -760,7 +785,7 @@ InitAudioDevice ← (◌Rl {"void" "InitAudioDevice"} {})
 CloseAudioDevice ← (◌Rl {"void" "CloseAudioDevice"} {})
 
 # Check if audio device has been initialized successfully
-IsAudioDeviceReady ← (Rl {"int" "IsAudioDeviceReady"} {})
+IsAudioDeviceReady ← (Rl {"bool" "IsAudioDeviceReady"} {})
 
 # Set master volume (listener)
 SetMasterVolume ← ◌Rl {"void" "SetMasterVolume" "float"} □₁
@@ -769,17 +794,17 @@ SetMasterVolume ← ◌Rl {"void" "SetMasterVolume" "float"} □₁
 GetMasterVolume ← (Rl {"float" "SetMasterVolume"} {})
 
 # Load wave data from file
-LoadWave ← Types!Wave Rl {FFIWave "LoadWave" "const char*"} □₁
+LoadWave ← Types!Wave Rl {FFIWave "LoadWave" "char*"} □₁
 
 # Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
 # ? FileType FileData
-LoadWaveFromMemory ← Types!Wave Rl {FFIWave "LoadWaveFromMemory" "const char*" "const unsigned char:2" "int"} □₂
+LoadWaveFromMemory ← Types!Wave Rl {FFIWave "LoadWaveFromMemory" "char*" "uchar:2" "int"} □₂
 
 # Checks if wave data is valid (data loaded and parameters)
-IsWaveValid ← Rl {"int" "IsWaveValid" FFIWave} {Types!Wave}
+IsWaveValid ← Rl {"bool" "IsWaveValid" FFIWave} {Types!Wave}
 
 # Load sound from file
-LoadSound ← Types!Sound Rl {FFISound "LoadSound" "const char*"} □₁
+LoadSound ← Types!Sound Rl {FFISound "LoadSound" "char*"} □₁
 
 # Load sound from wave data 
 LoadSoundFromWave ← Types!Sound Rl {FFISound "LoadSoundFromWave" FFIWave} {Types!Wave}
@@ -788,11 +813,11 @@ LoadSoundFromWave ← Types!Sound Rl {FFISound "LoadSoundFromWave" FFIWave} {Typ
 LoadSoundAlias ← Types!Sound Rl {FFISound "LoadSoundAlias" FFISound} {Types!Sound}
 
 # Checks if a sound is valid (data loaded and buffers initialized)
-IsSoundValid ← Rl {"int" "IsSoundValid" FFISound} {Types!Sound}
+IsSoundValid ← Rl {"bool" "IsSoundValid" FFISound} {Types!Sound}
 
 # Update sound buffer with new data
 # ? Sound Data SampleCount
-UpdateSound ← ◌ Rl {"void" "UpdateSound" FFISound "const unsigned char*" "int"} {Types!(Sound|∘|∘)}
+UpdateSound ← ◌ Rl {"void" "UpdateSound" FFISound "uchar*" "int"} {Types!(Sound|∘|∘)}
 
 # Unload wave data
 UnloadWave ← ◌ Rl {"void" "UnloadWave" FFIWave} {Types!Wave}
@@ -816,7 +841,7 @@ PauseSound ← ◌ Rl {"void" "PauseSound" FFISound} {Types!Sound}
 ResumeSound ← ◌ Rl {"void" "ResumeSound" FFISound} {Types!Sound}
 
 # Check if a sound is currently playing
-IsSoundPlaying ← Rl {"int" "IsSoundPlaying" FFISound} {Types!Sound}
+IsSoundPlaying ← Rl {"bool" "IsSoundPlaying" FFISound} {Types!Sound}
 
 # Set volume for a sound (1.0 is max level)
 SetSoundVolume ← ◌ Rl {"void" "SetSoundVolume" FFISound "float"} {Types!(Sound|∘)}
