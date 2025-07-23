@@ -345,13 +345,13 @@ EndModeThreeD ← (◌ Rl {"void" "EndMode3D"} {})
 
 # Update camera position for selected mode
 # Camera ? Camera Mode
-UpdateCamera ← Types!(CameraThreeD) Rl {"void" "UpdateCamera" ˜⊂@*FFICameraThreeD "int"} {Types!(CameraThreeD|∘)}
+UpdateCamera ← Types!(CameraThreeD) Rl {"void" "UpdateCamera" $"out _"FFICameraThreeD "int"} {Types!(CameraThreeD|∘)}
 
 # Update camera movement/rotation
 # Camera ? Camera Movement Rotation Zoom
 UpdateCameraPro ← (
   {Types!(CameraThreeD|Vector₃|Vector₃|∘)}
-  Types!(CameraThreeD) Rl {"void" "UpdateCameraPro" ˜⊂@*FFICameraThreeD FFIVector₃ FFIVector₃ "float"}
+  Types!(CameraThreeD) Rl {"void" "UpdateCameraPro" $"out _"FFICameraThreeD FFIVector₃ FFIVector₃ "float"}
 )
 
 # Check if a mouse button has been pressed once.
