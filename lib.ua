@@ -24,6 +24,7 @@ Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 ~Window {Width Height Title}
 ~Image {Data Width Height Mipmaps Format}
 ~Texture {Id Width Height Mipmaps Format}
+~RenderTexture {Id Texture Depth}
 ~Vector₃ [X Y Z]
 ~Vector₂ [X Y]
 ~Rectangle [X Y Width Height]
@@ -46,23 +47,24 @@ Mesh ← □₁₇
 
 # FFI Structs
 
-FFIVector₃      ← "float[3]"
-FFIVector₂      ← "float[2]"
-FFIColor        ← "uchar[4]"
-FFIImage        ← "{uchar*; int; int; int; int}"
-FFITexture      ← "{uint; int; int; int; int}"
-FFIRectangle    ← "float[4]"
-FFIFont         ← $"{int; int; int; _; void*; void*}" FFITexture
-FFIWave         ← "{uint; uint; uint; uint; uchar*}"
-FFIAudioStream  ← "{void*; void*; uint; uint; uint}"
-FFISound        ← $"{_; uint}" FFIAudioStream
-FFICameraThreeD ← ˙$"{_; _; _; float; int}" FFIVector₃
-FFIMesh         ← "{int; int; float*; float*; float*; float*; float*; uchar*; ushort*; void*; void*; void*; void*; void*; int; uint; void*}"
-FFIMatrix       ← "float[16]"
-FFIShader       ← "{uint; int*}"
-FFIMaterialMap  ← $"{_; _; float}" FFITexture FFIColor
-FFIMaterial     ← $"{_; _*; float[4]}" FFIShader FFIMaterialMap
-FFIModel        ← $"{_; int; int; _*; _*; int*; int; void*; void*}" FFIMatrix FFIMesh FFIMaterial
+FFIVector₃       ← "float[3]"
+FFIVector₂       ← "float[2]"
+FFIColor         ← "uchar[4]"
+FFIImage         ← "{uchar*; int; int; int; int}"
+FFITexture       ← "{uint; int; int; int; int}"
+FFIRenderTexture ← ˙$"{uint; _; _}" FFITexture
+FFIRectangle     ← "float[4]"
+FFIFont          ← $"{int; int; int; _; void*; void*}" FFITexture
+FFIWave          ← "{uint; uint; uint; uint; uchar*}"
+FFIAudioStream   ← "{void*; void*; uint; uint; uint}"
+FFISound         ← $"{_; uint}" FFIAudioStream
+FFICameraThreeD  ← ˙$"{_; _; _; float; int}" FFIVector₃
+FFIMesh          ← "{int; int; float*; float*; float*; float*; float*; uchar*; ushort*; void*; void*; void*; void*; void*; int; uint; void*}"
+FFIMatrix        ← "float[16]"
+FFIShader        ← "{uint; int*}"
+FFIMaterialMap   ← $"{_; _; float}" FFITexture FFIColor
+FFIMaterial      ← $"{_; _*; float[4]}" FFIShader FFIMaterialMap
+FFIModel         ← $"{_; int; int; _*; _*; int*; int; void*; void*}" FFIMatrix FFIMesh FFIMaterial
 
 ┌─╴Color
   ~ [R G B A]
@@ -345,13 +347,13 @@ EndModeThreeD ← (◌ Rl {"void" "EndMode3D"} {})
 
 # Update camera position for selected mode
 # Camera ? Camera Mode
-UpdateCamera ← Types!(CameraThreeD) Rl {"void" "UpdateCamera" ˜⊂@*FFICameraThreeD "int"} {Types!(CameraThreeD|∘)}
+UpdateCamera ← Types!(CameraThreeD) Rl {"void" "UpdateCamera" $"out _"FFICameraThreeD "int"} {Types!(CameraThreeD|∘)}
 
 # Update camera movement/rotation
 # Camera ? Camera Movement Rotation Zoom
 UpdateCameraPro ← (
   {Types!(CameraThreeD|Vector₃|Vector₃|∘)}
-  Types!(CameraThreeD) Rl {"void" "UpdateCameraPro" ˜⊂@*FFICameraThreeD FFIVector₃ FFIVector₃ "float"}
+  Types!(CameraThreeD) Rl {"void" "UpdateCameraPro" $"out _"FFICameraThreeD FFIVector₃ FFIVector₃ "float"}
 )
 
 # Check if a mouse button has been pressed once.
@@ -699,6 +701,21 @@ DrawTexturePro ← (
   {Types!(Texture|Rectangle|Rectangle|Vector₂|∘|Color)}
   ◌Rl {"void" "DrawTexturePro" FFITexture FFIRectangle FFIRectangle FFIVector₂ "float" FFIColor}
 )
+
+# Load texture for rendering (framebuffer)
+# RenderTexture ? Width Height
+LoadRenderTexture ← Types!RenderTexture Rl {FFIRenderTexture "LoadRenderTexture" "int" "int"} □₂
+
+# Unload render texture from GPU memory (VRAM)
+# ? RenderTexture
+UnloadRenderTexture ← ◌ Rl {"void" "UnloadRenderTexture" FFIRenderTexture} {Types!RenderTexture}
+
+# Begin drawing to render texture
+# ? RenderTexture
+BeginTextureMode ← ◌Rl {"void" "BeginTextureMode" FFIRenderTexture} {Types!RenderTexture}
+
+# Ends drawing to render texture
+EndTextureMode ← ◌Rl{"void" "EndTextureMode"} □₀
 
 # Check collision between two rectangles.
 # Boolean ? Rectangle Rectangle
