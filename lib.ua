@@ -33,14 +33,8 @@ Types! ↚^ $"⊓(_)" /$"_|_" ⍚(⍥$"⍜°_∘"⊸(˜∊1±)) ⊙◌
 ~AudioStream {Buffer Processor SampleRate SampleSize Channels}
 ~Sound {AudioStream FrameCount}
 ~CameraThreeD {Position Target Up FovY Projection}
-# HOTFIX: change this back once large datadefs compile faster
-# ~Mesh {VertexCount TriangleCount Vertices TexCoords TexCoords₂ Normals Tangents Colors Indices AnimVertices AnimNormals BoneIds BoneWeights BoneMatrices BoneCount VaoId VboId}
-Mesh ← □₁₇
-# ~Model {TransformMatrix MeshCount MaterialCount Meshes Materials MeshMaterial BoneCount Bones BindPose}
-┌─╴Model
-  New       ← □₉
-  Materials ← °□⊡4
-└─╴
+~Mesh {VertexCount TriangleCount Vertices TexCoords TexCoords₂ Normals Tangents Colors Indices AnimVertices AnimNormals BoneIds BoneWeights BoneMatrices BoneCount VaoId VboId}
+~Model {TransformMatrix MeshCount MaterialCount Meshes Materials MeshMaterial BoneCount Bones BindPose}
 ~Shader {Id Locs}
 ~MaterialMap {Texture Color Value}
 ~Material {Shader Maps Params}
