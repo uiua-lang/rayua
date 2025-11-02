@@ -577,7 +577,7 @@ MeasureTextEx ← Types!Vector₂ Rl {FFIVector₂ "MeasureTextEx" FFIFont "char
 
 # Draw text using the default font, centered around the given position.
 # ? Text Position Size Color
-DrawTextCentered ← DrawText :-⊙:÷2⊟ ◡⊃(MeasureText ⊙⋅∘|⋅⋅∘)
+DrawTextCentered ← DrawText ∪⌞∘-÷2⊟ ◡⊸∪MeasureText
 
 # Models
 
