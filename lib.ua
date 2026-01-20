@@ -162,6 +162,36 @@ FFIModel         ← $"{_; int; int; _*; _*; int*; int; void*; void*}" FFIMatrix
   KpEqual    ← 336
 └─╴
 
+┌─╴GamepadButton
+  Unknown        ← 0
+  LeftFaceUp     ← 1
+  LeftFaceRight  ← 2
+  LeftFaceDown   ← 3
+  LeftFaceLeft   ← 4
+  RightFaceUp    ← 5
+  RightFaceRight ← 6
+  RightFaceDown  ← 7
+  RightFaceLeft  ← 8
+  LeftTrigger₁   ← 9
+  LeftTrigger₂   ← 10
+  RightTrigger₁  ← 11
+  RightTrigger₂  ← 12
+  MiddleLeft     ← 13
+  Middle         ← 14
+  MiddleRight    ← 15
+  LeftThumb      ← 16
+  RightThumb     ← 17
+└─╴
+
+┌─╴GamepadAxis
+  LeftX        ← 0
+  LeftY        ← 1
+  RightX       ← 2
+  RightY       ← 3
+  LeftTrigger  ← 4
+  RightTrigger ← 5
+└─╴
+
 ┌─╴ConfigFlags
   VSyncHint              ← 64    # 0x00000040
   FullscreenMode         ← 2     # 0x00000002
@@ -437,6 +467,50 @@ GetCharPressed ← (+@\0 Rl {"int" "GetCharPressed"} {})
 # Set a custom key to exit program (default is ESC).
 # ? Char
 SetExitKey ← ◌Rl {"void" "SetExitKey" "int"} {KeyCode}
+
+# Check if a gamepad is available
+# IsAvailable ? Gamepad
+IsGamepadAvailable ← Rl {"bool" "IsGamepadAvailable" "int"} □₁
+
+# Get gamepad internal name id
+# Name ? Gamepad
+GetGamepadName ← Rl {"char*" "GetGamepadName" "int"} □₁
+
+# Check if a gamepad button has been pressed once
+# HasBeenPressed ? Gamepad Button
+IsGamepadButtonPressed ← Rl {"bool" "IsGamepadButtonPressed" "int" "int"} □₂
+
+# Check if a gamepad button is being pressed
+# IsPressed ? Gamepad Button
+IsGamepadButtonDown ← Rl {"bool" "IsGamepadButtonDown" "int" "int"} □₂
+
+# Check if a gamepad button has been released once
+# HasBeenReleased ? Gamepad Button
+IsGamepadButtonReleased ← Rl {"bool" "IsGamepadButtonReleased" "int" "int"} □₂
+
+# Check if a gamepad button is NOT being pressed
+# IsReleased ? Gamepad Button
+IsGamepadButtonUp ← Rl {"bool" "IsGamepadButtonUp" "int" "int"} □₂
+
+# Get the last gamepad button pressed
+# ButtonPressed ?
+GetGamepadButtonPressed ← Rl {"int" "GetGamepadButtonPressed"} {}
+
+# Get gamepad axis count for a gamepad
+# NumAxes ? Gamepad
+GetGamepadAxisCount ← Rl {"int" "GetGamepadAxisCount" "int"} □₁
+
+# Get axis movement value for a gamepad axis
+# AxisMovement ? Gamepad Axis
+GetGamepadAxisMovement ← Rl {"float" "GetGamepadAxisMovement" "int" "int"} □₂
+
+# Set internal gamepad mappings (SDL_GameControllerDB)
+# Success ? SpecificationString
+SetGamepadMappings ← Rl {"int" "SetGamepadMappings" "char*"} □₁
+
+# Set gamepad vibration for both motors (duration in seconds)
+# ? Gamepad LeftAmount RightAmount Duration
+SetGamepadVibration ← Rl {"void" "SetGamepadVibration" "int" "float" "float" "float"} □₄
 
 # Shape Module
 
