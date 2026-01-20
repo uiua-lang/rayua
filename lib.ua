@@ -510,7 +510,7 @@ SetGamepadMappings ← Rl {"int" "SetGamepadMappings" "char*"} □₁
 
 # Set gamepad vibration for both motors (duration in seconds)
 # ? Gamepad LeftAmount RightAmount Duration
-SetGamepadVibration ← Rl {"void" "SetGamepadVibration" "int" "float" "float" "float"} □₄
+SetGamepadVibration ← ◌Rl {"void" "SetGamepadVibration" "int" "float" "float" "float"} □₄
 
 # Shape Module
 
